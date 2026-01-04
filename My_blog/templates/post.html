@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - lonelyhorse{% endblock %}
+
+{% block content %}
+    <article class="article-container">
+        <header class="article-header">
+            <h1 class="article-title">{{ title }}</h1>
+            <div class="article-meta">READING FROM TXT SOURCE</div>
+        </header>
+
+        <div class="article-body">
+            <!-- 遍历 TXT 的每一行，渲染成段落 -->
+            {% for line in lines %}
+                <p>{{ line }}</p>
+            {% endfor %}
+        </div>
+        
+        <div style="margin-top: 50px; text-align: center;">
+            <a href="/" class="card-btn">← 返回首页</a>
+        </div>
+    </article>
+{% endblock %}

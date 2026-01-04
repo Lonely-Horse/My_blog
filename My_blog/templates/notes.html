@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Notes - lonelyhorse{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+    
+    <!-- 头部标题 -->
+    <div class="hero" style="padding: 40px 0; border-bottom: 2px solid #000; margin-bottom: 40px;">
+        <h1 style="font-size: 2.5rem;">NOTES</h1>
+        <p style="color: #666;">Fragments of thoughts.</p>
+    </div>
+
+    <!-- 随笔流列表 -->
+    <div class="notes-stream">
+        {% for note in notes %}
+        <div class="note-item">
+            
+            <!-- 标题和时间部分 (这里只需要一份) -->
+            <div class="note-header">
+                <span class="note-dot"></span>
+                <h3 class="note-title">
+                    {{ note.title }}
+                    <!-- 显示时间 -->
+                    <span style="font-size: 0.8rem; color: #ccc; margin-left: 10px; font-weight: normal;">
+                        {{ note.date }}
+                    </span>
+                </h3>
+            </div>
+            
+            <!-- 内容部分 -->
+            <div class="note-content">
+                {{ note.content }}
+            </div>
+        </div>
+        {% else %}
+            <!-- 如果没有文件 -->
+            <p style="text-align: center; color: #999; padding: 40px;">
+                暂无随笔，请在服务器 notes 文件夹添加 .txt 文件。
+            </p>
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- 样式表 (必须有，否则时间轴和圆点看不见) -->
+<style>
+    .notes-stream {
+        border-left: 1px solid #e0e0e0; /* 左侧灰线 */
+        padding-left: 30px;
+        margin-left: 10px;
+    }
+
+    .note-item {
+        margin-bottom: 60px;
+        position: relative;
+    }
+
+    .note-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .note-dot {
+        position: absolute;
+        left: -36px; /* 调整圆点位置到线上 */
+        top: 6px;
+        width: 12px;
+        height: 12px;
+        background: #000;
+        border-radius: 50%;
+        border: 2px solid #fff; /* 白边防止遮挡 */
+        box-shadow: 0 0 0 1px #e0e0e0; /* 增加一点轮廓 */
+    }
+
+    .note-title {
+        font-family: monospace;
+        font-size: 1.1rem;
+        color: #000;
+        margin: 0;
+    }
+
+    .note-content {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: #333;
+        white-space: pre-wrap; /* 保留TXT换行 */
+        font-family: var(--font-body);
+        background: #fff;
+        padding: 25px;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+</style>
+{% endblock %}

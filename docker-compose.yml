@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+        nginx:
+                image: nginx:alpine
+                container_name: My_nginx
+                restart: always
+                ports:
+                        - "80:80"
+                        - "443:443"
+                volumes:
+                        - /home/user1/share_docker/mylinux/nginx/conf.d:/etc/nginx/conf.d
+                        - /home/user1/share_docker/mylinux/nginx/logs:/var/log/nginx
+                depends_on:
+                        - myblog
+                networks:
+                        - web_net
+
+
+        myblog:
+                image: crpi-lumqbuk51q86bxk3.cn-chengdu.personal.cr.aliyuncs.com/lonelyhorse/mylinux:latest
+                container_name: My_blog
+                restart: always
+                expose:
+                        - "5000"
+                volumes:
+                        - /home/user1/share_docker/mylinux/notes:/usr/local/My_blog/notes
+                        - /home/user1/share_docker/mylinux/posts:/usr/local/My_blog/posts
+                        - /home/user1/share_docker/mylinux/projects:/usr/local/My_blog/static/projects
+                        - /home/user1/share_docker/mylinux/projects_web/projects.json:/usr/local/My_blog/projects.json
+                environment:
+                        - TZ=Asia/Shanghai
+                networks:
+                        - web_net
+networks:
+        web_net:
+                driver: bridge
+

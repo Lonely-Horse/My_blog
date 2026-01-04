@@ -1,0 +1,62 @@
+name: Deploy Blog to Aliyun & Server
+
+# 触发条件：当 main 分支有 push 动作时
+on:
+  push:
+    branches: [ "main" ]
+
+# 环境变量：你的镜像地址 (把这里改成你真实的地址！)
+env:
+  # 格式：registry.cn-chengdu.aliyuncs.com/命名空间/仓库名
+  IMAGE_NAME: crpi-lumqbuk51q86bxk3.cn-chengdu.personal.cr.aliyuncs.com/lonelyhorse/mylinux
+  # 我们统一使用 latest 标签，方便自动更新
+  IMAGE_TAG: latest
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. 拉取代码
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. 登录阿里云容器镜像服务
+    - name: Login to Aliyun Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: crpi-lumqbuk51q86bxk3.cn-chengdu.personal.cr.aliyuncs.com
+        username: ${{ secrets.ALIYUN_REGISTRY_USER }}
+        password: ${{ secrets.ALIYUN_REGISTRY_PWD }}
+
+    # 3. 构建镜像并推送到阿里云
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+    # 4. SSH 连上服务器进行部署
+    - name: SSH Remote Deploy
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        # 这里的 port 如果你改过 ssh 端口要记得改，默认 22
+        port: 22
+        script: |
+          # 进入你的 docker-compose 目录
+          cd /home/user1/docker_compose/my_plan/  # <--- 请确认这个路径对不对！
+          
+          # 1. 拉取刚才 push 的最新镜像
+          docker compose pull My_blog
+          
+          # 2. 重建容器 (Nginx 不会断，Blog 会瞬间重启)
+          docker compose up -d My_blog
+          
+          # 3. 清理掉旧的废弃镜像 (节约磁盘空间)
+          docker image prune -f
+          
+          echo "🚀 Deployment Successful!"
