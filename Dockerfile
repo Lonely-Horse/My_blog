@@ -1,4 +1,4 @@
-FROM rockylinux
+FROM rockylinux:9
 LABEL maintainer="lonelyhorse"
 
 ENV MYPATH /usr/local
