@@ -6,7 +6,7 @@ services:
                 container_name: My_nginx
                 restart: always
                 ports:
-                        - "80:80"
+                        - "80"
                         - "443:443"
                 volumes:
                         - /home/user1/share_docker/mylinux/nginx/conf.d:/etc/nginx/conf.d
