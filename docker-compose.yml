@@ -1,22 +1,6 @@
 version: '3.8'
 
 services:
-        nginx:
-                image: nginx:alpine
-                container_name: My_nginx
-                restart: always
-                ports:
-                        - "80:80"
-                        - "443:443"
-                volumes:
-                        - /home/user1/share_docker/mylinux/nginx/conf.d:/etc/nginx/conf.d
-                        - /home/user1/share_docker/mylinux/nginx/logs:/var/log/nginx
-                depends_on:
-                        - myblog
-                networks:
-                        - web_net
-
-
         myblog:
                 image: crpi-lumqbuk51q86bxk3.cn-chengdu.personal.cr.aliyuncs.com/lonelyhorse/mylinux:latest
                 container_name: My_blog
@@ -31,8 +15,8 @@ services:
                 environment:
                         - TZ=Asia/Shanghai
                 networks:
-                        - web_net
+                        - my_net
 networks:
-        web_net:
-                driver: bridge
-
+        my_net:
+                external: true
+                name: global_public_net
