@@ -53,10 +53,11 @@ jobs:
           # 1. 拉取刚才 push 的最新镜像
           docker compose pull My_blog
           
-          # 2. 重建容器 (Nginx 不会断，Blog 会瞬间重启)
-          docker compose up -d My_blog
+          # 2. 强制用最新镜像重建该服务（不影响其他服务）
+          docker compose up -d --no-deps --force-recreate My_blog
           
           # 3. 清理掉旧的废弃镜像 (节约磁盘空间)
           docker image prune -f
           
+
           echo "🚀 Deployment Successful!"
