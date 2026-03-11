@@ -1,17 +1,14 @@
 FROM rockylinux:9
 LABEL maintainer="lonelyhorse"
-
 ENV MYPATH /usr/local
-COPY My_blog $MYPATH/My_blog
-WORKDIR /My_blog
-COPY . .
 
-RUN yum -y install vim net-tools python3 python3-pip && \ 
+RUN yum -y install vim net-tools python3 python3-pip && \
     yum clean all
+
+WORKDIR $MYPATH/My_blog
+COPY . .
 
 RUN pip3 install flask
 
 EXPOSE 5000
-
 CMD ["python3","app.py"]
-
