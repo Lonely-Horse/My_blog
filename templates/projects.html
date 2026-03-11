@@ -1,47 +1,40 @@
 {% extends 'base.html' %}
 
-{% block title %}Project Library - lonelyhorse{% endblock %}
+{% block title %}Projects - lonelyhorse{% endblock %}
 
 {% block content %}
 <div class="container">
-    <div class="hero" style="padding: 40px 0; background: #fff; color: #000; border-bottom: 2px solid #000;">
-        <h1 style="font-size: 2.5rem;">PROJECT LIBRARY</h1>
-        <p style="color: #666;">Code / Tools / Experiments</p>
+    <div class="page-header">
+        <h1>PROJECT LIBRARY</h1>
+        <p>Code / Tools / Experiments</p>
     </div>
 
-    <!-- 表格式布局，显得更像档案库 -->
-    <div style="margin-top: 40px;">
+    <div class="projects-list" style="margin-bottom: 100px;">
         {% for project in projects %}
-        <div class="project-row" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e0e0e0; padding: 25px 0;">
-            <div style="flex: 1;">
-                <div style="margin-bottom: 5px;">
+        <div class="project-row">
+            <div>
+                <div class="project-tags">
                     {% for tag in project.tags %}
-                        <span style="background: #000; color: #fff; padding: 2px 6px; font-size: 0.7rem; margin-right: 5px;">{{ tag }}</span>
+                        <span>{{ tag }}</span>
                     {% endfor %}
                 </div>
-                <h3 style="font-size: 1.5rem; margin-bottom: 10px;">{{ project.name }}</h3>
-                <p style="color: #666; font-size: 0.95rem; max-width: 600px;">{{ project.desc }}</p>
+                <h3 class="project-title">{{ project.name }}</h3>
+                <p class="project-desc">{{ project.desc }}</p>
             </div>
             
-            <div style="display: flex; gap: 15px; flex-shrink: 0;">
-                <!-- target="_blank" 表示在新窗口打开 -->
-		<a href="{{ project.source_link }}" target="_blank" style="border: 1px solid #000; padding: 8px 15px; font-size: 0.9rem; transition: 0.3s;">
-   						 查看源码 ↗
-		</a>
+            <div class="project-actions">
+                <a href="{{ project.source_link or project.sourse_link or '#' }}" target="_blank" class="btn-outline">
+                    VIEW SOURCE ↗
+                </a>
                 
-                <!-- 下载按钮 -->
-                <a href="{{ url_for('download_file', filename=project.file_name) }}" style="background: #000; color: #fff; padding: 8px 15px; font-size: 0.9rem;">
-                    下载 ↓
+                <a href="{{ url_for('download_file', filename=project.file_name) }}" class="btn-solid">
+                    DOWNLOAD ↓
                 </a>
             </div>
         </div>
+        {% else %}
+            <p style="text-align: center; color: var(--text-muted); padding: 40px;">No projects found.</p>
         {% endfor %}
     </div>
 </div>
-
-<!-- 额外加一点只针对这个页面的 CSS -->
-<style>
-    .project-row:hover { background-color: #fcfcfc; }
-    .project-row a:hover { opacity: 0.7; }
-</style>
 {% endblock %}
