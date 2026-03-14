@@ -1,0 +1,3 @@
+netstat -tulpn | grep PORT
+可以通过这个看到他的pid或者是ppid
+使用kill -9/12 来清除端口的占用

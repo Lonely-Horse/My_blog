@@ -8,10 +8,10 @@ services:
                 expose:
                         - "5000"
                 volumes:
-                        - /home/user1/share_docker/mylinux/notes:/usr/local/My_blog/notes
-                        - /home/user1/share_docker/mylinux/posts:/usr/local/My_blog/posts
-                        - /home/user1/share_docker/mylinux/projects:/usr/local/My_blog/static/projects
-                        - /home/user1/share_docker/mylinux/projects_web/projects.json:/usr/local/My_blog/projects.json
+                        - /home/user1/git_push/My_blog/notes:/usr/local/My_blog/notes
+                        - /home/user1/git_push/My_blog/posts:/usr/local/My_blog/posts
+                        - /home/user1/git_push/My_blog/static/projects:/usr/local/My_blog/static/projects
+                        - /home/user1/git_push/My_blog/projects_web/projects.json:/usr/local/My_blog/projects.json
                 environment:
                         - TZ=Asia/Shanghai
                 networks:
