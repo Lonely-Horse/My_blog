@@ -48,7 +48,7 @@ jobs:
         port: 22
         script: |
           # 进入你的 docker-compose 目录
-          cd /home/user1/docker_compose/my_plan/  # <--- 请确认这个路径对不对！
+          cd /home/user1/git_push/My_blog  # <--- 请确认这个路径对不对！
           
           # 1. 拉取刚才 push 的最新镜像
           docker compose pull My_blog
@@ -58,6 +58,5 @@ jobs:
           
           # 3. 清理掉旧的废弃镜像 (节约磁盘空间)
           docker image prune -f
-          
 
           echo "🚀 Deployment Successful!"
