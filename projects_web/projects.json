@@ -39,6 +39,14 @@
 		"file_name":"智能文件整理系统v1.2.zip",
 		"tags":["pathlib","python","整理","记录"],
 		"source_link":"#"
+	},
+	{
+		"id":6,
+		"name":"智能检测系统v1.0",
+		"desc":"基于EmailMessage,psutil,smtplib的智能监测脚本，可以给你的邮箱发送报警信息",
+		"file_name":"system_monitor_v1.0.zip",
+		"tags":["EmailMessage","psutil","smtplib","python","监测"],
+		"source_link":"#"
 	}
 ]
 
