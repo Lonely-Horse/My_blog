@@ -8,7 +8,7 @@ RUN yum -y install vim net-tools python3 python3-pip && \
 WORKDIR $MYPATH/My_blog
 COPY . .
 
-RUN pip3 install fastapi
+RUN pip3 install fastapi uvicorn jinja2 aiofiles
 
 EXPOSE 8000
-CMD ["python3","app.py"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
