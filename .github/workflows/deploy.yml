@@ -1,27 +1,24 @@
 name: Deploy Blog to Aliyun & Server
 
-# 触发条件：当 main 分支有 push 动作时
 on:
   push:
     branches: [ "main" ]
 
-# 环境变量：你的镜像地址 (把这里改成你真实的地址！)
 env:
-  # 格式：registry.cn-chengdu.aliyuncs.com/命名空间/仓库名
   IMAGE_NAME: crpi-lumqbuk51q86bxk3.cn-chengdu.personal.cr.aliyuncs.com/lonelyhorse/mylinux
-  # 我们统一使用 latest 标签，方便自动更新
   IMAGE_TAG: latest
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
     steps:
-    # 1. 拉取代码
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2. 登录阿里云容器镜像服务
+    # 【新增】设置 Docker Buildx，确保能正确构建并推送镜像
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
     - name: Login to Aliyun Container Registry
       uses: docker/login-action@v2
       with:
@@ -29,34 +26,38 @@ jobs:
         username: ${{ secrets.ALIYUN_REGISTRY_USER }}
         password: ${{ secrets.ALIYUN_REGISTRY_PWD }}
 
-    # 3. 构建镜像并推送到阿里云
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v4
       with:
         context: .
         push: true
-        tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+        # 【修改】除了 latest 标签，额外增加一个基于当前 commit 编号的唯一标签 (github.sha)
+        # 这样能 100% 保证每次推送到阿里云的镜像都是全新的，避开缓存
+        tags: |
+          ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-    # 4. SSH 连上服务器进行部署
     - name: SSH Remote Deploy
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.SERVER_IP }}
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        # 这里的 port 如果你改过 ssh 端口要记得改，默认 22
         port: 22
+        # 【新增】把密码也传进 ssh-action 的环境变量里，供 script 使用
+        envs: ALIYUN_REGISTRY_USER,ALIYUN_REGISTRY_PWD
         script: |
-          # 进入你的 docker-compose 目录
-          cd /home/user1/git_push/My_blog  # <--- 请确认这个路径对不对！
+          # 【新增】服务器必须先登录阿里云镜像库！否则拉取私有镜像会失败，导致只能用老镜像
+          docker login --username=${{ secrets.ALIYUN_REGISTRY_USER }} --password=${{ secrets.ALIYUN_REGISTRY_PWD }} crpi-lumqbuk51q86bxk3.cn-chengdu.personal.cr.aliyuncs.com
           
-          # 1. 拉取刚才 push 的最新镜像
+          cd /home/user1/git_push/My_blog
+          
+          # 【修改】拉取最新镜像
           docker compose pull My_blog
           
-          # 2. 强制用最新镜像重建该服务（不影响其他服务）
+          # 重建服务
           docker compose up -d --no-deps --force-recreate My_blog
           
-          # 3. 清理掉旧的废弃镜像 (节约磁盘空间)
+          # 清理旧镜像
           docker image prune -f
-
           echo "🚀 Deployment Successful!"
