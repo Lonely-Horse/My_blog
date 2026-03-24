@@ -8,7 +8,7 @@ RUN yum -y install vim net-tools python3 python3-pip && \
 WORKDIR $MYPATH/My_blog
 COPY . .
 
-RUN pip3 install flask
+RUN pip3 install fastapi
 
 EXPOSE 5000
 CMD ["python3","app.py"]
