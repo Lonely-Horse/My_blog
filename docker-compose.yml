@@ -6,7 +6,7 @@ services:
                 container_name: My_blog
                 restart: always
                 expose:
-                        - "5000"
+                        - "8000"
                 volumes:
                         - /home/user1/git_push/My_blog/notes:/usr/local/My_blog/notes
                         - /home/user1/git_push/My_blog/posts:/usr/local/My_blog/posts
