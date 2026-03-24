@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+    <script>document.documentElement.classList.add('js-enabled');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}lonelyhorse{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
 </head>
 <body>
 
@@ -12,6 +13,7 @@
     <header>
         <div class="container nav-flex">
             <a href="/" class="logo">lonelyhorse.</a>
+            <div class="menu-toggle">☰</div>
             <nav class="nav-links">
                 <a href="/">首页</a>
                 <a href="/projects">项目库</a>
@@ -33,6 +35,6 @@
         </div>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', path='js/main.js') }}"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 {% block title %}{{ title }} - lonelyhorse{% endblock %}
 
 {% block content %}
-    <article class="article-container">
+    <article class="article-container reveal">
         <header class="article-header">
             <h1 class="article-title">{{ title }}</h1>
             <div class="article-meta">Words and Reflections &middot; LONELY HORSE</div>
@@ -12,11 +12,11 @@
         <div class="article-body">
             <!-- 遍历 TXT 的每一行，渲染成段落 -->
             {% for line in lines %}
-                <p>{{ line }}</p>
+                <p class="reveal">{{ line }}</p>
             {% endfor %}
         </div>
         
-        <div style="margin-top: 80px; text-align: center; margin-bottom: 40px;">
+        <div class="reveal" style="margin-top: 80px; text-align: center; margin-bottom: 40px;">
             <a href="/" class="btn-outline">← RETURN HOME</a>
         </div>
     </article>

@@ -1,53 +1,56 @@
 import os
 import json
 import datetime
-from flask import Flask, render_template, abort, send_from_directory
+from fastapi import FastAPI,Request,HTTPException
+from fastapi.responses import HTMLResponse,FileResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
-app = Flask(__name__)
+app = FastAPI()
 
-# 配置上传/下载文件夹路径
-PROJECTS_DIR = os.path.join(app.root_path, 'static/projects')
-POSTS_DIR = os.path.join(app.root_path, 'posts')
-NOTES_DIR = os.path.join(app.root_path, 'notes')
+templates=Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+BASE_PATH = Path(__file__).resolve().parent
+PROJECTS_DIR = BASE_PATH / 'static/projects'
+POSTS_DIR = BASE_PATH / 'posts'
+NOTES_DIR = BASE_PATH / 'notes'
+HTTP_DIR = BASE_PATH / 'projects_web'
 # 1. 首页
-@app.route('/')
-def index():
-    return render_template('index.html')
-
+@app.get('/',include_in_schema=False)
+def index(request:Request):
+    return templates.TemplateResponse(request=request, name="index.html") 
+ 
 # 2. 通用文章页 (读取本地 TXT)
-# 访问 /article/confession 会自动去读 posts/confession.txt
-@app.route('/article/<filename>')
-def article(filename):
-    # 安全检查：只允许文件名，不允许路径跳转（防止读取系统文件）
+@app.get('/article/{filename}',response_class=HTMLResponse,include_in_schema=False)
+def article(request: Request, filename: str):
+
     if '..' in filename or '/' in filename:
-        abort(404)
+        raise HTTPException(status_code=404,detail = "Not Found")
         
-    filepath = os.path.join(POSTS_DIR, f'{filename}.txt')
+    filepath = POSTS_DIR / f'{filename}.txt'
     
     if not os.path.exists(filepath):
-        abort(404)
+        raise HTTPException(status_code=404,detail = "Not Found")
         
     # 读取文件内容
     content_lines = []
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            # 按行读取，方便前端分段显示
+
             content_lines = [line.strip() for line in f.readlines() if line.strip()]
     except Exception as e:
-        return f"读取错误: {e}"
+        raise HTTPException(status_code=500, detail="Error reading file")
 
-    # 这里的 title 我们简单处理，首字母大写
-    return render_template('post.html', title=filename.upper(), lines=content_lines)
+    return templates.TemplateResponse(name='post.html', request=request,context={"title": filename.upper(), "lines": content_lines})
 
 # 3. 项目库页面
-@app.route('/projects')
-def projects():
-    # 模拟项目数据（未来可以从数据库或json文件读）
-    # source_link 可以是 GitHub 地址，也可以是本地另一个页面
-    json_path = os.path.join(app.root_path, 'projects.json')
+@app.get('/projects',include_in_schema=False)
+def projects(request:Request):
+    json_path = HTTP_DIR / 'projects.json'
     
     project_list = []
-    # 尝试读取 json 文件
     if os.path.exists(json_path):
         try:
             with open(json_path, 'r', encoding='utf-8') as f:
@@ -55,58 +58,54 @@ def projects():
         except Exception as e:
             print(f"JSON读取错误: {e}")
             
-    return render_template('projects.html', projects=project_list)
+    return templates.TemplateResponse(name='projects.html', request=request,context={"projects":project_list})
 
 # 4. 下载路由
-@app.route('/download/<path:filename>')
-def download_file(filename):
-    # as_attachment=True 会触发浏览器下载而不是直接预览
-    return send_from_directory(PROJECTS_DIR, filename, as_attachment=True)
+@app.get('/download/{filename:path}')
+def download_file(filename:str):
+    FILE_PATH = (PROJECTS_DIR / filename).resolve()
+    
+    # 防止路径遍历
+    if not FILE_PATH.is_relative_to(PROJECTS_DIR.resolve()):
+        raise HTTPException(status_code=403, detail="Forbidden")
+        
+    if not FILE_PATH.is_file():
+        raise HTTPException(status_code=404, detail="Not Found")
+        
+    return FileResponse(path=FILE_PATH, filename=FILE_PATH.name)
 
 #5.随笔路由
-@app.route('/notes')
-def notes():
+@app.get('/notes',include_in_schema=False)
+
+def notes(request:Request):
     notes_list = []
 
-    if os.path.exists(NOTES_DIR):
-        # 1. 获取所有 .txt 文件
-        files = [f for f in os.listdir(NOTES_DIR) if f.endswith('.txt')]
+    if NOTES_DIR.exists():
+        files = list(NOTES_DIR.glob('*.txt'))
 
-        # 2. 构造一个包含 (文件名, 修改时间) 的列表
         file_data = []
-        for filename in files:
-            filepath = os.path.join(NOTES_DIR, filename)
-            # 获取文件最后修改时间戳
-            mtime = os.path.getmtime(filepath)
-            file_data.append((filename, mtime))
+        for filepath in files:
+            mtime = filepath.stat().st_mtime
+            file_data.append((filepath, mtime))
 
-        # 3. 按修改时间倒序排列 (最新的时间排前面)
-        # key=lambda x: x[1] 表示按照元组的第2个元素(时间)来排序
         file_data.sort(key=lambda x: x[1], reverse=True)
 
         # 4. 读取内容
-        for filename, mtime in file_data:
-            filepath = os.path.join(NOTES_DIR, filename)
+        for filepath, mtime in file_data:
             try:
-                with open(filepath, 'r', encoding='utf-8') as f:
-                    content = f.read()
+                content = filepath.read_text(encoding='utf-8')
 
                 # 标题就是文件名去掉 .txt
-                title = filename.replace('.txt', '')
+                title = filepath.stem
 
-                # 我们可以顺便把时间格式化一下，显示给前端看
                 date_str = datetime.datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M')
 
                 notes_list.append({
                     "title": title,
-                    "date": date_str,  # 新增一个时间字段
+                    "date": date_str,
                     "content": content
                 })
             except Exception as e:
-                print(f"Error reading {filename}: {e}")
-
-    return render_template('notes.html', notes=notes_list)
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
-
+                print(f"Error reading {filepath.name}: {e}")
+            
+    return templates.TemplateResponse(name='notes.html',request=request,context={"notes":notes_list})

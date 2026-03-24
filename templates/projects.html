@@ -4,14 +4,14 @@
 
 {% block content %}
 <div class="container">
-    <div class="page-header">
+    <div class="page-header reveal">
         <h1>PROJECT LIBRARY</h1>
         <p>Code / Tools / Experiments</p>
     </div>
 
     <div class="projects-list" style="margin-bottom: 100px;">
         {% for project in projects %}
-        <div class="project-row">
+        <div class="project-row reveal">
             <div>
                 <div class="project-tags">
                     {% for tag in project.tags %}
@@ -33,7 +33,7 @@
             </div>
         </div>
         {% else %}
-            <p style="text-align: center; color: var(--text-muted); padding: 40px;">No projects found.</p>
+            <p style="text-align: center; color: var(--text-muted); padding: 40px;" class="reveal">No projects found.</p>
         {% endfor %}
     </div>
 </div>
