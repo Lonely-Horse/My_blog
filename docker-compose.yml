@@ -2,21 +2,15 @@ version: '3.8'
 
 services:
         myblog:
-                image: crpi-lumqbuk51q86bxk3.cn-chengdu.personal.cr.aliyuncs.com/lonelyhorse/mylinux:latest
+                build: .
+                image: blog_local:latest
                 container_name: My_blog
                 restart: always
-                expose:
-                        - "8000"
                 volumes:
-                        - /home/user1/git_push/My_blog/notes:/usr/local/My_blog/notes
-                        - /home/user1/git_push/My_blog/posts:/usr/local/My_blog/posts
-                        - /home/user1/git_push/My_blog/static/projects:/usr/local/My_blog/static/projects
-                        - /home/user1/git_push/My_blog/projects_web/projects.json:/usr/local/My_blog/projects.json
+                        - /home/lonelyhorse/work/My_blog/notes:/usr/local/My_blog/notes
+                        - /home/lonelyhorse/work/My_blog/posts:/usr/local/My_blog/posts
+                        - /home/lonelyhorse/work/My_blog/static/projects:/usr/local/My_blog/static/projects
+                        - /home/lonelyhorse/work/My_blog/projects_web/projects.json:/usr/local/My_blog/projects.json
                 environment:
                         - TZ=Asia/Shanghai
-                networks:
-                        - my_net
-networks:
-        my_net:
-                external: true
-                name: global_public_net
+                network_mode: host

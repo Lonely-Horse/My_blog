@@ -1,72 +1,49 @@
-name: Deploy Blog to Aliyun & Server
+name: Edge Blog GitOps Deploy
 
-# 触发条件：当 main 分支有 push 动作时
+# 只有当 main 分支有代码推送时才触发
 on:
   push:
-    branches: [ "main" ]
-
-# 环境变量：你的镜像地址
-env:
-  # 格式：registry.cn-chengdu.aliyuncs.com/命名空间/仓库名
-  IMAGE_NAME: crpi-lumqbuk51q86bxk3.cn-chengdu.personal.cr.aliyuncs.com/lonelyhorse/mylinux
-  # 我们统一使用 latest 标签，方便自动更新
-  IMAGE_TAG: latest
+    branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-    # 1. 拉取代码
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    # 2. 设置 Docker Buildx（确保能正确构建并推送镜像，防止因缺少构建环境报错）
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    # 3. GitHub Action 运行环境登录阿里云容器镜像服务
-    - name: Login to Aliyun Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: crpi-lumqbuk51q86bxk3.cn-chengdu.personal.cr.aliyuncs.com
-        username: ${{ secrets.ALIYUN_REGISTRY_USER }}
-        password: ${{ secrets.ALIYUN_REGISTRY_PWD }}
-
-    # 4. 构建镜像并推送到阿里云
-    - name: Build and Push Docker Image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        # 除了 latest 标签，额外增加一个基于当前 commit 编号的唯一标签 (github.sha)
-        # 这样能 100% 保证每次推送到阿里云的镜像都是全新的，彻底避开服务器本地缓存问题
-        tags: |
-          ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          ${{ env.IMAGE_NAME }}:${{ github.sha }}
-
-    # 5. SSH 连上服务器进行部署
-    - name: SSH Remote Deploy
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.SERVER_IP }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        # 这里的 port 如果你改过 ssh 端口要记得改，默认 22
-        port: 22
-        script: |
-          # A. 服务器必须先安全登录阿里云镜像库！否则拉取私有镜像会失败，导致只能用老镜像
-          echo "${{ secrets.ALIYUN_REGISTRY_PWD }}" | docker login --username="${{ secrets.ALIYUN_REGISTRY_USER }}" --password-stdin crpi-lumqbuk51q86bxk3.cn-chengdu.personal.cr.aliyuncs.com
-          
-          # B. 进入你的 docker-compose 目录
-          cd /home/user1/git_push/My_blog
-          
-          # C. 拉取刚才 push 的最新镜像 (注意：这里必须用全小写 myblog，与 docker-compose.yml 的服务名保持完全一致！)
-          docker compose pull myblog
-          
-          # D. 强制用最新镜像重建该服务（不影响其他服务）(同样必须使用 myblog)
-          docker compose up -d --no-deps --force-recreate myblog
-          
-          # E. 清理掉旧的废弃悬空镜像 (节约磁盘空间)
-          docker image prune -f
-          
-          echo "🚀 Deployment Successful!"
+      - name: Remote Deployment via Aliyun Jump Host
+        uses: appleboy/ssh-action@master
+        with:
+          # 1. 登录阿里云服务器的配置（从你的 GitHub Secrets 读取）
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # 设置连接超时时间
+          connect_timeout: 30s
+          script: |
+            echo "--- 已经成功登录阿里云服务器 ---"
+            
+            # 2. 在阿里云上通过 Tailscale SSH 到手机执行部署命令
+            # -i 指定你已有的那把钥匙
+            # -o 禁用主机名检查（防止 CI 过程中因为没见过手机指纹而卡住）
+            ssh -i ~/.ssh/id_ed25519_github_actions -o StrictHostKeyChecking=no lonelyhorse@100.81.84.116 << 'EOF'
+              echo "--- 已经成功进入一加手机边缘节点 ---"
+              
+              # 进入项目目录
+              cd /home/lonelyhorse/work/My_blog
+              
+              # 拉取最新代码
+              echo "正在从 GitHub 拉取最新代码..."
+              git pull origin main
+              
+              # 原地构建并重启容器
+              # 注意：如果你的用户不在 docker 组，请保留 doas
+              echo "正在重新构建并启动 Docker 容器..."
+              doas docker compose up -d --build
+              
+              # 清理无用镜像碎片，释放手机空间
+              echo "清理过期镜像..."
+              doas docker image prune -f
+              
+              echo "--- 手机端部署任务全部完成！ ---"
+            EOF
+            
+            echo "--- 整个流水线执行完毕 ---"

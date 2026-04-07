@@ -10,9 +10,14 @@
         </header>
 
         <div class="article-body">
-            <!-- 遍历 TXT 的每一行，渲染成段落 -->
+            <!-- 插入不可见的空段落，用来消耗掉全局 CSS 中的 p:first-of-type 首字母大写样式 -->
+            <p style="display: none;"></p>
+            
+            <!-- 遍历 TXT 的每一行，跳过空行，优化段落排版细节 -->
             {% for line in lines %}
-                <p class="reveal">{{ line }}</p>
+                {% if line.strip() %}
+                    <p class="reveal">{{ line }}</p>
+                {% endif %}
             {% endfor %}
         </div>
         
