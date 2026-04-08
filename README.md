@@ -72,11 +72,11 @@ GitHub Actions (CI/CD) / GitOps
 
 1. 监控系统概览 (Grafana Dashboard)
 
- 
+![Grafana 截图](./images/grafana.png) 
  
 2. 监控目标状态 (Prometheus Targets)
 
- 
+![Grafana 截图](./images/prometheus.png)
  
 ## 📅 路线图 (Roadmap)
 
