@@ -1,61 +1,99 @@
-# 🐎 LonelyHorse Blog (FastAPI)
+# 📱 Edge-Computing & Observability Platform
+> **基于一加手机 (ARM64) 边缘节点与阿里云公网网关的分布式监控与个人博客系统**
+> 
+> ![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)
+> ![Platform](https://img.shields.io/badge/Platform-ARM64%20|%20x86_64-blue)
+> ![Network](https://img.shields.io/badge/Network-Tailscale%20VPN-orange)
 
-![Python Version](https://img.shields.io/badge/Python-3.9+-blue.svg)
-![Framework](https://img.shields.io/badge/FastAPI-0.100+-009688.svg)
-![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg)
-![CI/CD](https://img.shields.io/badge/CI%2FCID-GitHub_Actions-2088FF.svg)
+---
 
-> 基于 **FastAPI** 构建的轻量级、容器化、高可观测性的个人技术博客系统。
-> 摒弃了沉重的传统 CMS 架构，采用纯文本/静态文件驱动，专注于**极致的访问性能**与**现代化的工程交付链路**。
+## 🏗 架构图 (Architecture)
 
-## ✨ 核心特性
+本项目采用 **"云端网关 + 边缘计算"** 的混合架构，通过私有隧道实现公网访问与内网服务的解耦。
 
-- **🚀 极速响应**：后端采用异步框架 FastAPI 深度重构（从 Flask 迁移），结合 Uvicorn 提供高并发处理能力。
-- **📦 容器化交付**：完全基于 Docker 运行，屏蔽环境差异，实现“一次构建，到处运行”。
-- **🔄 自动化流水线 (CI/CD)**：集成 GitHub Actions，代码 Push 后自动完成镜像构建、推送至阿里云 ACR 私有镜像库，并触发服务器无缝滚动更新。
-- **👁️ 深度可观测性 (Observability)**：
-  - 内置 `prometheus_fastapi_instrumentator` 中间件，自动暴露 `/metrics` 接口。
-  - 针对业务逻辑进行深度埋点统计（包括：首页访问量、文章分类访问趋势、文件下载量统计）。
-  - 特色设计：精准捕获并分类 404 异常请求（防高基数爆炸设计），配合外部 Alertmanager 实现业务级告警闭环。
+```mermaid
+graph TD
+    User((访问者)) -- "HTTPS/443" --> Aliyun[阿里云 Nginx 网关]
+    Aliyun -- "Tailscale 隧道" --> Phone[一加手机 边缘节点]
+    
+    subgraph Phone_Docker ["Docker Containers (Host Mode)"]
+        Blog[FastAPI Blog]
+        Prom[Prometheus]
+        Graf[Grafana]
+        Alert[Alertmanager]
+        Node[Node Exporter]
+    end
+    
+    GitHub -- "Push Code" --> Actions[GitHub Actions]
+    Actions -- "SSH via Tailscale" --> Phone
+    Phone -- "Git Pull & Build" --> Blog
+```
+## 🛠 技术栈 (Tech Stack)
+维度
+	
+技术实现
+基础硬件
+	
+一加手机 (OnePlus 6) / 阿里云服务器 / Fedora 开发机
+操作系统
+	
+postmarketOS (Edge Linux) / Rocky Linux 9 (容器基础)
+容器技术
+	
+Docker / Docker Compose / Native ARM64 Build
+网络层
+	
+Tailscale (SD-WAN) / Nginx (Reverse Proxy) / SSL (Let's Encrypt)
+监控层
+	
+Prometheus / Grafana / Alertmanager / Node Exporter
+自动化
+	
+GitHub Actions (CI/CD) / GitOps
+ 
+  
+ 
+## 🔥 核心亮点 (Project Highlights)
+1. 边缘侧原地构建 (Build on Edge)
 
-## 🏗️ 架构与技术栈
+针对 x86 (云端) 与 ARM64 (边缘端) 的架构差异，通过 GitHub Actions 驱动边缘节点进行 原地构建 (Native Build)。仅传输源码，在边缘端生成适配 CPU 的原生镜像，极大提升了部署效率与兼容性。
+2. 零信任网络架构 (Zero-Trust)
 
-- **后端框架**：Python 3 + FastAPI + Jinja2Templates + StaticFiles
-- **部署编排**：Docker + Docker Compose
-- **镜像仓库**：阿里云容器镜像服务 (ACR)
-- **CI/CD**：GitHub Actions + Appleboy SSH Action
-- **监控集成**：Prometheus Client
+手机节点不暴露公网端口，仅允许来自 Tailscale 虚拟隧道的入站流量。配合宿主机级 nftables 防火墙，构建了极高的安全屏障。
+3. 全链路可观测性 (Full Observability)
 
-## ⚙️ 自动化发布流程 (GitOps)
+    业务监控：实时追踪 FastAPI 博客的访问量、QPS 及 404 状态。
+    硬件监控：通过 Node Exporter 监控手机 CPU 温度、内存压力及网络 IO。
+    告警闭环：实现“服务异常 -> 阈值触发 -> 邮件告警”的自动化运维闭环（基于 Alertmanager）。
 
-本项目的上线流程已实现 100% 自动化，无需人工 SSH 登录服务器操作源码：
+## 📊 运行状态预览 (Monitoring Dashboard)
 
-1. 开发者在本地完成 Markdown 文章撰写或后端代码修改。
-2. 提交代码并 `git push` 到 GitHub `main` 分支。
-3. **GitHub Actions** 自动触发：
-   - 检出最新代码。
-   - 使用 `docker buildx` 构建最新镜像。
-   - 将镜像打上 `latest` 和 `github.sha` 双标签，推送至阿里云 ACR 镜像库。
-   - 通过 SSH 免密登录阿里云生产服务器。
-   - 服务器执行 `docker compose pull` 拉取最新镜像，并强制重建博客容器，清理悬空镜像。
+    提示：以下为系统实时运行截图。请确保仓库内包含 images/ 目录。
 
-## 📊 监控与指标 (Metrics)
+1. 监控系统概览 (Grafana Dashboard)
 
-本服务原生暴露标准的 Prometheus 指标采集端点：`http://<domain>:8000/metrics`。
+ 
+ 
+2. 监控目标状态 (Prometheus Targets)
 
-**核心自定义业务指标：**
-- `blog_index_views_total`: 首页总访问量
-- `blog_article_views_total{article="..."}`: 单篇文章阅读量统计
-- `blog_downloads_total{file="..."}`: 资源文件下载统计
-- `blog_not_found_total{type="..."}`: 404 异常路由聚合分类统计（用于死链与恶意扫描告警）
+ 
+ 
+## 📅 路线图 (Roadmap)
 
-*(注：本服务的外部监控大盘与告警路由规则，由独立的 [monitor 基础设施仓库] 进行 IaC 统一管理。)*
+     
+    业务从云端向边缘 ARM 节点迁移。
+     
+    落地全链路 Prometheus 监控与邮件告警。
+     
+    成功打通 GitHub Actions 自动化部署流水线。
+     
+    自建国内 DERP 节点优化 Tailscale 延迟。
+     
+    引入 Ansible 实现多节点配置自动化管理。
 
-## 🛠️ 本地开发与运行
+## 👨‍💻 关于作者
 
-如果你想在本地启动本博客进行开发调试：
+LonelyHorse - 重庆地区三本计算机专业大一学生 / DevOps 爱好者
 
-1. **克隆仓库**
-   ```bash
-   git clone git@github.com:your_username/My_blog.git
-   cd My_blog
+    Blog: https://blog.lonelyhorse.top
+    Monitoring: https://grafana.lonelyhorse.top
