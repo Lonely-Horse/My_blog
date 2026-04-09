@@ -24,7 +24,7 @@ jobs:
             # 2. 在阿里云上通过 Tailscale SSH 到手机执行部署命令
             # -i 指定你已有的那把钥匙
             # -o 禁用主机名检查（防止 CI 过程中因为没见过手机指纹而卡住）
-            ssh -i ~/.ssh/id_ed25519_github_actions -o StrictHostKeyChecking=no lonelyhorse@100.81.84.116 << 'EOF'
+            ssh -i ~/.ssh/id_ed25519.pub -o StrictHostKeyChecking=no lonelyhorse@100.81.84.116 << 'EOF'
               echo "--- 已经成功进入一加手机边缘节点 ---"
               
               # 进入项目目录
