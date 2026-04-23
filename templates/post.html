@@ -3,20 +3,30 @@
 {% block title %}{{ title }} - lonelyhorse{% endblock %}
 
 {% block content %}
+    <!-- 过滤掉与标题重复的第一行 -->
+    {% set raw_heading = lines[0] if lines else title %}
+    {% set display_title = raw_heading[1:-1] if raw_heading.startswith('《') and raw_heading.endswith('》') else raw_heading %}
+    {% set article_lines = lines[1:] if lines and raw_heading == lines[0] else lines %}
+
     <article class="article-container reveal">
         <header class="article-header">
-            <h1 class="article-title">{{ title }}</h1>
+            <h1 class="article-title">{{ display_title }}</h1>
             <div class="article-meta">Words and Reflections &middot; LONELY HORSE</div>
         </header>
 
         <div class="article-body">
-            <!-- 插入不可见的空段落，用来消耗掉全局 CSS 中的 p:first-of-type 首字母大写样式 -->
-            <p style="display: none;"></p>
-            
-            <!-- 遍历 TXT 的每一行，跳过空行，优化段落排版细节 -->
-            {% for line in lines %}
-                {% if line.strip() %}
-                    <p class="reveal">{{ line }}</p>
+            {% for line in article_lines %}
+                {% if line[0].isdigit() and '.' in line[:4] %}
+                    <h2 class="article-h2 reveal">{{ line }}</h2>
+                {% elif line[0] in '一二三四五六七八九十' and line[1:2] == '.' %}
+                    <h2 class="article-h2 reveal">{{ line }}</h2>
+                {% elif line.startswith('（') and '）' in line[:6] %}
+                    <p class="article-point reveal">{{ line }}</p>
+                {% elif '-->' in line or ('[' in line and ']' in line) %}
+                    <pre class="article-diagram reveal">{{ line }}</pre>
+                {% else %}
+                    <!-- 避免第一行的中文标点如“《”或首字下沉排版错乱，移除伪类首字下沉，改用普通段落 -->
+                    <p class="article-p reveal">{{ line }}</p>
                 {% endif %}
             {% endfor %}
         </div>

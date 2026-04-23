@@ -317,6 +317,10 @@ header.scrolled {
     padding: 60px 48px;
     border: 2px solid var(--text-main);
     box-shadow: var(--shadow-md);
+    /* 保证短文章也能撑起好看的外框 */
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .article-header {
@@ -342,23 +346,51 @@ header.scrolled {
 }
 
 .article-body {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     line-height: 2;
-    color: #1a1a1a;
+    color: #222;
+    flex: 1; /* 让文章主体占满剩余空间，把返回按钮推到底部 */
 }
 
-.article-body p {
-    margin-bottom: 2rem;
+/* 重新设计的层级样式，去掉了夸张的首字下沉，修复标点错乱 */
+.article-h2 {
+    font-size: 1.8rem;
+    line-height: 1.3;
+    margin: 50px 0 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
+    color: var(--text-main);
 }
 
-.article-body p:first-of-type::first-letter {
-    font-family: var(--font-heading);
-    font-size: 4.5rem;
-    float: left;
-    line-height: 0.8;
-    padding-right: 16px;
-    padding-top: 8px;
-    color: var(--accent);
+.article-point {
+    margin: 20px 0 20px 20px;
+    padding-left: 16px;
+    border-left: 3px solid var(--accent);
+    color: #111;
+    font-weight: 500;
+}
+
+.article-diagram {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f7f7f8;
+    border: 1px solid var(--border-light);
+    color: #333;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.article-p {
+    margin-bottom: 1.8rem;
+}
+
+.article-footer {
+    margin-top: 80px;
+    text-align: center;
+    padding-top: 40px;
+    border-top: 1px solid var(--border-light);
 }
 
 /* --- Projects Page --- */
