@@ -20,20 +20,13 @@ jobs:
           connect_timeout: 30s
           script: |
             echo "--- 已经成功登录阿里云服务器 ---"
-            
-            # 2. 在阿里云上通过 Tailscale SSH 到手机执行部署命令
-            # -i 指定你已有的那把钥匙
-            # -o 禁用主机名检查（防止 CI 过程中因为没见过手机指纹而卡住）
-            ssh -i ~/.ssh/git_workflows -o StrictHostKeyChecking=no lonelyhorse@100.81.84.116 << 'EOF'
+            ssh -i ~/.ssh/git_workflow -o StrictHostKeyChecking=no lonelyhorse@100.87.250.21 << 'EOF'
               echo "--- 已经成功进入一加手机边缘节点 ---"
-              
               # 进入项目目录
               cd /home/lonelyhorse/work/My_blog
-              
               # 拉取最新代码
               echo "正在从 GitHub 拉取最新代码..."
               git pull origin main
-              
               # 原地构建并重启容器
               # 注意：如果你的用户不在 docker 组，请保留 doas
               echo "正在重新构建并启动 Docker 容器..."
