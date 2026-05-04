@@ -17,11 +17,11 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           # 设置连接超时时间
-          connect_timeout: 30s
+          timeout: 30s
           script: |
             echo "--- 已经成功登录阿里云服务器 ---"
             ssh -i ~/.ssh/git_workflow -o StrictHostKeyChecking=no lonelyhorse@100.87.250.21 << 'EOF'
-              echo "--- 已经成功进入一加手机边缘节点 ---"
+              echo "--- 已经成功进入workstation节点 ---"
               # 进入项目目录
               cd /home/lonelyhorse/work/My_blog
               # 拉取最新代码
