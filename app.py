@@ -49,7 +49,6 @@ def article(request: Request, filename: str):
         not_found_counter.labels(type="article").inc()
         raise HTTPException(status_code=404,detail = "Not Found")
         
-    # 读取文件内容
     content_lines = []
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -81,7 +80,6 @@ def projects(request:Request):
 def download_file(filename:str):
     FILE_PATH = (PROJECTS_DIR / filename).resolve()
     
-    # 防止路径遍历
     if not FILE_PATH.is_relative_to(PROJECTS_DIR.resolve()):
         raise HTTPException(status_code=403, detail="Forbidden")
         
@@ -107,12 +105,10 @@ def notes(request:Request):
 
         file_data.sort(key=lambda x: x[1], reverse=True)
 
-        # 4. 读取内容
         for filepath, mtime in file_data:
             try:
                 content = filepath.read_text(encoding='utf-8')
 
-                # 标题就是文件名去掉 .txt
                 title = filepath.stem
 
                 date_str = datetime.datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M')
@@ -130,10 +126,8 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
         path = request.url.path
         if path.startswith("/article/"):
-            # 文章页 404 已经在业务里记了，这里不重复记
             pass
         elif path.startswith("/download/"):
-            # 下载页 404 已经在业务里记了，这里不重复记
             pass
         else:
             not_found_counter.labels(type="route").inc()
