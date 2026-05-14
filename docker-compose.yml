@@ -1,16 +1,26 @@
-version: '3.8'
-
 services:
-        myblog:
-                build: .
-                image: blog_local:latest
-                container_name: My_blog
-                restart: always
-                volumes:
-                        - /home/lonelyhorse/work/My_blog/notes:/usr/local/My_blog/notes
-                        - /home/lonelyhorse/work/My_blog/posts:/usr/local/My_blog/posts
-                        - /home/lonelyhorse/work/My_blog/static/projects:/usr/local/My_blog/static/projects
-                        - /home/lonelyhorse/work/My_blog/projects_web/projects.json:/usr/local/My_blog/projects.json
-                environment:
-                        - TZ=Asia/Shanghai
-                network_mode: host
+  myblog:
+    build: .
+    image: 100.87.250.21:5000/blog_local:latest
+    container_name: My_blog
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - /home/lonelyhorse/work/My_blog/notes:/usr/local/My_blog/notes
+      - /home/lonelyhorse/work/My_blog/posts:/usr/local/My_blog/posts
+      - /home/lonelyhorse/work/My_blog/static/projects:/usr/local/My_blog/static/projects
+      - /home/lonelyhorse/work/My_blog/projects_web/projects.json:/usr/local/My_blog/projects.json
+    environment:
+      - TZ=Asia/Shanghai
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.blog.rule=Host(`blog.ser7`)"
+      - "traefik.http.routers.blog.entrypoints=web"
+      - "traefik.http.services.my-blog.loadbalancer.server.port=8000"
+    networks:
+      - gateway_default
+
+networks:
+  gateway_default:
+    external: true
