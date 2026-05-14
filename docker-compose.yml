@@ -7,10 +7,10 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - /home/lonelyhorse/work/My_blog/notes:/usr/local/My_blog/notes
-      - /home/lonelyhorse/work/My_blog/posts:/usr/local/My_blog/posts
-      - /home/lonelyhorse/work/My_blog/static/projects:/usr/local/My_blog/static/projects
-      - /home/lonelyhorse/work/My_blog/projects_web/projects.json:/usr/local/My_blog/projects.json
+      - ./My_blog/notes:/usr/local/My_blog/notes
+      - ./My_blog/posts:/usr/local/My_blog/posts
+      - ./My_blog/static/projects:/usr/local/My_blog/static/projects
+      - ./My_blog/projects_web/projects.json:/usr/local/My_blog/projects.json
     environment:
       - TZ=Asia/Shanghai
     labels:

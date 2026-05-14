@@ -30,7 +30,6 @@ jobs:
               # 原地构建并重启容器
               # 注意：如果你的用户不在 docker 组，请保留 doas
               echo "正在重新构建并启动 Docker 容器..."
-              sudo docker compose down
               sudo docker compose up -d --build
               # 清理无用镜像碎片，释放手机空间
               echo "清理过期镜像..."
