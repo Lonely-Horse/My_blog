@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM 100.87.250.21:5000/python:3.9-slim
 LABEL maintainer="lonelyhorse"
 ENV MYPATH=/usr/local
 
