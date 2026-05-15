@@ -44,11 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, {
         root: null,
-        // threshold 用 0：只要元素有任意一像素进入视口就触发。
-        // 之前用 0.1 会导致超长文章（如 ser7_to_t630，正文容器高度约 21000px）
-        // 在 ~900px 高的视口里最多只有约 4% 可见，永远达不到 10% 阈值，
-        // 外层 .article-container.reveal 始终保持 opacity:0，
-        // 由于 opacity 会作用于整棵子树，里面所有段落即便自己被触发也不可见。
+        // 用 0 阈值，避免超长文章容器（视口可见占比永远 < 0.1）永远不触发，导致正文被 opacity:0 隐藏
         threshold: 0,
         rootMargin: '0px 0px -50px 0px'
     });
