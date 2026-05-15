@@ -558,6 +558,17 @@ header.scrolled {
     transform: translateY(0);
 }
 
+/*
+ * 文章正文容器永远不参与 "初始隐藏 + 入场动画"。
+ * 原因：超长文章（行数多）容器高度远大于视口，IntersectionObserver
+ * 永远拿不到 .active，整棵子树会被 opacity:0 隐藏 -> 正文不显示。
+ * 段落级别的 .reveal 动画依然保留，主题视觉不变。
+ */
+.js-enabled .article-container.reveal {
+    opacity: 1;
+    transform: none;
+}
+
 /* --- Footer --- */
 footer {
     background: #111111;

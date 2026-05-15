@@ -33,25 +33,65 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 滚动动画 (Reveal on Scroll)
+    // 关键修复点：
+    // 1) 已经在视口里/视口之上的元素，立即激活（不依赖 IntersectionObserver 触发）。
+    //    这样能解决「超长文章 .article-container.reveal 因可见比过低而永远不被激活，
+    //    导致整个正文 opacity:0 不显示」的问题。
+    // 2) 视口下方的元素仍然走 IntersectionObserver 做入场动画，主题/动画效果不变。
+    // 3) 兜底：1 秒后强制激活所有未激活的 .reveal，保证内容永远不会因为脚本异常而消失。
     const revealElements = document.querySelectorAll('.reveal');
-    
-    const revealObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-                observer.unobserve(entry.target); // 只执行一次动画
-            }
+
+    const activate = (el) => el.classList.add('active');
+
+    const supportsIO = 'IntersectionObserver' in window;
+    const viewportH = window.innerHeight || document.documentElement.clientHeight;
+
+    let revealObserver = null;
+    if (supportsIO) {
+        revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    activate(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            root: null,
+            threshold: 0,
+            rootMargin: '0px 0px -50px 0px'
         });
-    }, {
-        root: null,
-        // 用 0 阈值，避免超长文章容器（视口可见占比永远 < 0.1）永远不触发，导致正文被 opacity:0 隐藏
-        threshold: 0,
-        rootMargin: '0px 0px -50px 0px'
-    });
+    }
+
+    // 与 rootMargin: '0 0 -50px 0' 对齐：顶部进入视口下沿 50px 以上才算"已可见"
+    const visibleEdge = viewportH - 50;
 
     revealElements.forEach(el => {
-        revealObserver.observe(el);
+        const rect = el.getBoundingClientRect();
+        // 元素顶部已越过 visibleEdge -> 立即激活
+        if (rect.top < visibleEdge) {
+            activate(el);
+            return;
+        }
+        // 否则延后到滚动到视口时再激活
+        if (revealObserver) {
+            revealObserver.observe(el);
+        } else {
+            // 不支持 IntersectionObserver 的退化路径：直接全部激活
+            activate(el);
+        }
     });
+
+    // 兜底定时器：1 秒后只对结构性容器（.article-container）强制显现，
+    // 防止超长文章因任何原因导致整篇正文被 opacity:0 隐藏；
+    // 段落级 .reveal 仍保留滚动入场动画（CSS 层已经让 .article-container 永远可见，
+    // 子段落即使没激活也只是缺少入场动画，不会消失）。
+    setTimeout(() => {
+        document.querySelectorAll('.article-container.reveal').forEach(el => {
+            if (!el.classList.contains('active')) {
+                activate(el);
+            }
+        });
+    }, 1000);
 
     // 高亮当前导航页
     const currentPath = window.location.pathname;
