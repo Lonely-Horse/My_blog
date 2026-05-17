@@ -9,7 +9,8 @@ RUN apt update && \
 WORKDIR $MYPATH/My_blog
 COPY . .
 
-RUN pip3 install fastapi uvicorn jinja2 aiofiles prometheus_fastapi_instrumentator
+RUN pip3 install -i https://mirrors.aliyun.com/pypi/simple/ \
+    fastapi uvicorn jinja2 aiofiles prometheus_fastapi_instrumentator
 
 EXPOSE 8000
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
