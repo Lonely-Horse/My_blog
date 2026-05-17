@@ -27,4 +27,4 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no \
             ${{ secrets.SER7_USER }}@${{ secrets.SER7_TS_IP }} \
-            "cd /home/lonelyhorse/work/My_blog && bash ./deploy.sh '${{ github.ref_name }}'"
+            "cd /home/lonelyhorse/work/My_blog && bash ./push_deploy.sh '${{ github.ref_name }}'"
