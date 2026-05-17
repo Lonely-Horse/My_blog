@@ -21,17 +21,18 @@ Image_version="${Image_address}/${Image_name}:${version}"
 T630_HOST="lonelyhorse@100.87.126.53"
 T630_DEPLOY_SCRIPT="/home/lonelyhorse/My_blog/pull_deploy.sh"
 
+echo "拉取远程 tag..."
+git fetch origin tag "$version"
+
+echo "切换到发布版本: $version"
+git checkout -f "refs/tags/$version"
+
+
 echo "现在开始原地构建镜像,并打好标签"
 docker build \
   -t "${Image_latest}" \
   -t "${Image_version}" \
   .
-
-echo "拉取远程 tag..."
-git fetch --tags origin
-
-echo "切换到发布版本: $version"
-git checkout -f "refs/tags/$version"
 
 echo "现在开始推送镜像到本地regustry仓库"
 
