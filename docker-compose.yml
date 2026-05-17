@@ -9,8 +9,6 @@ services:
     volumes:
       - ./notes:/usr/local/My_blog/notes
       - ./posts:/usr/local/My_blog/posts
-      - ./static/projects:/usr/local/My_blog/static/projects
-      - ./projects_web/projects.json:/usr/local/My_blog/projects.json
     environment:
       - TZ=Asia/Shanghai
     labels:
