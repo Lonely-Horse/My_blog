@@ -42,9 +42,8 @@ docker push ${Image_version}
 echo "镜像推送完毕"
 
 echo "开始rsync同步文件"
-echo "$(whoami)"
-rsync -av ./posts/ lonelyhorse@100.87.126.53:/home/lonelyhorse/My_blog/posts
-rsync -av ./notes/ lonelyhorse@100.87.126.53:/home/lonelyhorse/My_blog/notes
+rsync -av -e "ssh -i ~/.ssh/ser7_to_t630_deploy -o BatchMode=yes" ./posts/ lonelyhorse@100.87.126.53:/home/lonelyhorse/My_blog/posts
+rsync -av -e "ssh -i ~/.ssh/ser7_to_t630_deploy -o BatchMode=yes" ./notes/ lonelyhorse@100.87.126.53:/home/lonelyhorse/My_blog/notes
 
 echo "静态文件完成同步"
 
