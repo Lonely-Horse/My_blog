@@ -43,8 +43,8 @@ echo "镜像推送完毕"
 
 echo "开始rsync同步文件"
 
-rsync -av ./posts/ lonelyhorse@100.87.126.53:/home/lonelyhorse/My_blog/posts
-rsync -av ./notes/ lonelyhorse@100.87.126.53:/home/lonelyhorse/My_blog/notes
+sudo rsync -av ./posts/ lonelyhorse@100.87.126.53:/home/lonelyhorse/My_blog/posts
+sudo rsync -av ./notes/ lonelyhorse@100.87.126.53:/home/lonelyhorse/My_blog/notes
 
 echo "静态文件完成同步"
 
