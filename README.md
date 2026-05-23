@@ -1,99 +1,103 @@
-# 📱 Edge-Computing & Observability Platform
-> **基于一加手机 (ARM64) 边缘节点与阿里云公网网关的分布式监控与个人博客系统**
-> 
-> ![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)
-> ![Platform](https://img.shields.io/badge/Platform-ARM64%20|%20x86_64-blue)
-> ![Network](https://img.shields.io/badge/Network-Tailscale%20VPN-orange)
+# DevOps 自动化技术博客
 
----
+## 1.项目定位
+本项目是一个个人技术博客，本身用于我复盘我的踩坑记录，以及保留我的代码项目和学习经历，从而养成习惯于写文档记录的习惯
 
-## 🏗 架构图 (Architecture)
+它也承担了运维知识库的作用，用来沉淀linux，网络，docker，监控，自动化运维的实践经验
 
-项目采用 **"云端网关 + 边缘计算"** 的混合架构，通过私有隧道实现公网访问与内网服务的解耦。
+最重要的一点是，成为我DevOps/SRE/平台工程师的训练场和实验场地，不仅是一个简单的博客，本身还是我的技术结晶
 
-```mermaid
-graph TD
-    User((访问者)) -- "HTTPS/443" --> Aliyun[阿里云 Nginx 网关]
-    Aliyun -- "Tailscale 隧道" --> Phone[一加手机 边缘节点]
+## 2.当前框架概要
+当前的博客服务运行在我的HP t630边缘节点上，公网访问由aliyun server的nginx反代流量完成，服务器通过tailscale将请求内部转发到我的FastAPI博客服务
     
-    subgraph Phone_Docker ["Docker Containers (Host Mode)"]
-        Blog[FastAPI Blog]
-        Prom[Prometheus]
-        Graf[Grafana]
-        Alert[Alertmanager]
-        Node[Node Exporter]
-    end
-    
-    GitHub -- "Push Code" --> Actions[GitHub Actions]
-    Actions -- "SSH via Tailscale" --> Phone
-    Phone -- "Git Pull & Build" --> Blog
+Ser7作为我的workstation和ansible控制节点，负责日常开发，部署指挥，和自动化管理中心，Oneplus6作为备用的测试节点使用
+
+以下是结构图:
+```text
+      浏览器
+        |
+        |https
+        v
+aliyun server / nginx
+        |
+        |tailscale
+        v
+HP t630 / Docker Compose
+        |
+        |
+        v
+FastAPI Blog
 ```
-## 🛠 技术栈 (Tech Stack)
-维度
-	
-技术实现
-基础硬件
-	
-一加手机 (OnePlus 6) / 阿里云服务器 / Fedora 开发机
-操作系统
-	
-postmarketOS (Edge Linux) / Rocky Linux 9 (容器基础)
-容器技术
-	
-Docker / Docker Compose / Native ARM64 Build
-网络层
-	
-Tailscale (SD-WAN) / Nginx (Reverse Proxy) / SSL (Let's Encrypt)
-监控层
-	
-Prometheus / Grafana / Alertmanager / Node Exporter
-自动化
-	
-GitHub Actions (CI/CD) / GitOps
- 
-  
- 
-## 🔥 核心亮点 (Project Highlights)
-1. 边缘侧原地构建 (Build on Edge)
+详细架构说明，请见[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
-针对 x86 (云端) 与 ARM64 (边缘端) 的架构差异，通过 GitHub Actions 驱动边缘节点进行 原地构建 (Native Build)。仅传输源码，在边缘端生成适配 CPU 的原生镜像，极大提升了部署效率与兼容性。
-2. 零信任网络架构 (Zero-Trust)
+## 3.技术栈
+| 方向 | 技术 |
+|---|---|
+| 后端框架 | FastAPI |
+| 网页渲染 | Jinja2 Templates |
+| 容器化 | Docker / Docker Compose |
+| 公网入口 | Nginx |
+| 私有网络 | Tailscale |
+| 监控 | Prometheus / Grafana |
+| 告警 | Alertmanager |
+| 自动化 | GitHub Actions / Ansible |
+| 内容管理 | TXT文件 / bind mount / rsync(演进中) |
 
-手机节点不暴露公网端口，仅允许来自 Tailscale 虚拟隧道的入站流量。配合宿主机级 nftables 防火墙，构建了极高的安全屏障。
-3. 全链路可观测性 (Full Observability)
+## 4.已实现能力
+当前项目已经具备:
+- 基于FastAPI的博客首页，文章页，项目库和随笔页
+- 基于Docker Compose的容器化部署
+- 通过aliyun server+nginx+tailscale完成公网访问内网服务
+- 接入prometheus和grafana可视化，记录博客访问量，随笔访问量，项目页访问量，文件下载量，文章下载量，访问量和404数量
+- 使用alertmanager完成基础的告警链路
+- 对于`/metrics`指标路径进行公网入口拦截，走tailscale内网实现抓取数据
+- 通过git actions和部署脚本推进自动化部署操作
 
-    业务监控：实时追踪 FastAPI 博客的访问量、QPS 及 404 状态。
-    硬件监控：通过 Node Exporter 监控手机 CPU 温度、内存压力及网络 IO。
-    告警闭环：实现“服务异常 -> 阈值触发 -> 邮件告警”的自动化运维闭环（基于 Alertmanager）。
+## 5.监控和安全边界
+博客后端通过暴露出'/metrics'路径来暴露数据指标，被prometheus抓取数据
 
-## 📊 运行状态预览 (Monitoring Dashboard)
+当前公网入口nginx已经对于博客的配置进行了改变，对于/'metrics'路径进行对外封锁，并返还403错误码，避免了数据直接暴露在公网当中，导致泄露较为敏感的信息数据
 
-    提示：以下为系统实时运行截图。请确保仓库内包含 images/ 目录。
+本项目的基本安全边界是:业务页面可通过公网访问，但是监控暴露的数据指标和接口必须在tailscale内网当中流动，不能走公网通道
 
-1. 监控系统概览 (Grafana Dashboard)
+## 6.历史演进
 
-![Grafana 截图](./images/grafana.png) 
- 
-2. 监控目标状态 (Prometheus Targets)
+### 第一阶段: Aliyun Server
+直接运行在aliyun server上，使用nginx直接开放端口实现访问
 
-![Grafana 截图](./images/prometheus.png)
- 
-## 📅 路线图 (Roadmap)
+### 第二阶段: One Plus 6
+本身部署在arm64架构的一加6手机上，然后通过aliyun server的nginx反代，实现外部访问
 
-     
-    业务从云端向边缘 ARM 节点迁移。
-     
-    落地全链路 Prometheus 监控与邮件告警。
-     
-    成功打通 GitHub Actions 自动化部署流水线。
-     
-    自建国内 DERP 节点优化 Tailscale 延迟。
-     
-    引入 Ansible 实现多节点配置自动化管理。
+### 第三阶段: Ser7
+博客服务转移服务到零刻Ser7设备上，依旧是通过aliyun server的nginx反代，实现外部访问
 
-## 👨‍💻 关于作者
+### 第四阶段: T630 (现阶段)
+博客服务再次转移到HP T630边缘设备上，使用aliyun server部署的nginx反代，实现外部访问
 
-LonelyHorse - 重庆地区三本计算机专业大一学生 / DevOps 爱好者
+## 7.项目文档
 
-    Blog: https://blog.lonelyhorse.top
-    Monitoring: https://grafana.lonelyhorse.top
+- [架构说明](./docs/ARCHITECTURE.md)
+- [职业发展优先级别](./docs/CAREER_PRIORITY.md)
+- [Ser7到T630的服务迁移复盘](./posts/ser7_to_t630.txt)
+- [Alertmanager实践记录](./posts/Alertmanager_Blog.txt)
+
+## 8.当前状态和后续计划
+
+已完成:
+- FastAPI 博客基础功能
+- Docker Compose部署
+- Server Nginx 公网入口
+- Tailscale 内网访问链路
+- Prometheus / Grafana 基础监控
+- `/metrics` 公网访问拦截
+
+进行中:
+- Github Actions 部署链路完善
+- `rsync`内容同步流程
+- Ansible纳管博客基础设施
+- Dockerfile / Compose 工程化优化
+
+后续计划:
+- 完善Alertmanager告警规则和Grafana Dashboard
+- 学习Traefix，并逐步替代部分Nginx代理配置
+- 在基础稳定后探索k3s / k8s部署方式
