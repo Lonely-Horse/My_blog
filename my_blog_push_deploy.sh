@@ -67,4 +67,4 @@ rsync -av -e "ssh ${ssh_opts}" ./notes/ "${T630_HOST}:${t630_blog_address}/notes
 echo "静态文件完成同步"
 
 echo "触发 T630 部署..."
-ssh "${ssh_opts}" "$T630_HOST" "bash ${T630_DEPLOY_SCRIPT} '${version}'"
+ssh ${ssh_opts} "$T630_HOST" "bash ${T630_DEPLOY_SCRIPT} '${version}'"
