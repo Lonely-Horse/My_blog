@@ -9,6 +9,7 @@ version="${1:-}"
 if [ -z "$version" ]; then
     read -rp "请输入版本号:" version
 fi
+
 if [ -z "$version" ]; then
     echo "版本号不能为空"
     exit 1

@@ -47,6 +47,14 @@
 		"file_name":"system_monitor_v1.0.zip",
 		"tags":["EmailMessage","psutil","smtplib","python","监测"],
 		"source_link":"#"
+	},
+	{
+		"id":7,
+		"name":"ansible基础设施",
+		"desc":"这是一个关于ansible的基础设施建设，主要用于初始化和建设各类配置",
+		"file_name":"ansible.zip",
+		"tags":["Ansible","Lac","init"],
+		"source_link":"https://github.com/Lonely-Horse/lac_ansible"
 	}
 ]
 
