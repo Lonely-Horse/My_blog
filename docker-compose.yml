@@ -11,6 +11,12 @@ services:
       - ./posts:/usr/local/My_blog/posts
     environment:
       - TZ=Asia/Shanghai
+    healthcheck:
+      test: ["CMD","python","-c","import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz',time=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.blog.rule=Host(`blog.ser7`)"

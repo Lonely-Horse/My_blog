@@ -30,11 +30,16 @@ HTTP_DIR = BASE_PATH / 'projects_web'
 
 Instrumentator().instrument(app).expose(app)
 
+@app.get('/healthz',include_in_schema=False)
+def healthz():
+    return {"status":"ok"}
+
 # 1. 首页
 @app.get('/',include_in_schema=False)
 def index(request:Request):
     index_view_counter.inc()
     return templates.TemplateResponse(request=request, name="index.html")
+
 # 2. 通用文章页 (读取本地 TXT)
 @app.get('/article/{filename}',response_class=HTMLResponse,include_in_schema=False)
 def article(request: Request, filename: str):
