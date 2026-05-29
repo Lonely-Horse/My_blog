@@ -25,8 +25,24 @@ t630_blog_address="${HOME}/My_blog"
 ssh_key="${HOME}/.ssh/ser7_to_t630_deploy"
 ssh_opts="-i ${ssh_key} -o BatchMode=yes"
 
-echo "拉取远程 tag..."
-git fetch origin tag "$version"
+fetch_tag() {
+    for i in 1 2 3; do
+         echo "拉取远程tag，尝试${i}/3"
+        if git fetch origin tag "${version}"; then
+            return 0
+        fi
+
+        if [ "${i}" -lt 3 ]; then
+	    echo "拉取tag失败，等待5s，继续尝试"
+	    sleep 5
+        fi
+    done
+    echo "远程拉取失败，清稍后再次尝试"
+    return 1
+}
+
+fetch_tag
+
 build_dir="/tmp/my_blog_build_${version}"
 
 cleanup(){
