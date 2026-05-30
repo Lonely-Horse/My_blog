@@ -1,6 +1,5 @@
 services:
   myblog:
-    build: .
     image: 100.87.250.21:5000/blog_local:latest
     container_name: My_blog
     restart: always
@@ -12,7 +11,7 @@ services:
     environment:
       - TZ=Asia/Shanghai
     healthcheck:
-      test: ["CMD","python","-c","import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz',time=3)"]
+      test: ["CMD","python","-c","import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz',timeout=3)"]
       interval: 30s
       timeout: 5s
       retries: 3
