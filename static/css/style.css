@@ -658,10 +658,15 @@ main {
     min-width: 0;
 }
 
+/* 💥 解决文字卡片缺少 image-box 支撑导致的高度塌陷，统一限制其最小高并标准化 padding */
 .card-content.no-img {
     width: 100%;
-    padding: 48px;
-    background: linear-gradient(180deg, var(--bg-card) 0%, rgba(239, 246, 255, 0.05) 100%); /* 💥 修复点：将硬编码的 #ffffff 改为变量 var(--bg-card) */
+    padding: 36px;
+    background: var(--bg-card);
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     min-width: 0;
 }
 
