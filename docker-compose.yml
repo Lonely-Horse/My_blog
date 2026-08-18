@@ -6,8 +6,12 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./notes:/usr/local/My_blog/notes
-      - ./posts:/usr/local/My_blog/posts
+      # 挂载本地的 notes/ 笔记与 posts/ 博客 Markdown 文件夹，使内容更新即时映射进容器，保持容器只读安全
+      - ./notes:/usr/local/My_blog/notes:ro
+      - ./posts:/usr/local/My_blog/posts:ro
+      # 💥 挂载本地的 static/ 静态资源及 templates/ 模板目录，确保宿主机的样式和页面修改能在容器中同步热更新渲染
+      - ./static:/usr/local/My_blog/static:ro
+      - ./templates:/usr/local/My_blog/templates:ro
     environment:
       - TZ=Asia/Shanghai
     healthcheck:
