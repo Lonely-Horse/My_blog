@@ -1,82 +1,125 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <!-- 顶部大图/标语区域 -->
-    <section class="hero reveal">
-        <div class="container hero-content">
-            <h1>LONELY HORSE</h1>
-            <p>在代码的荒原上，独自奔跑。</p>
+<!-- 在背景中加入精致的渐变光晕气泡，烘托亮色下的高级蓝光漫射氛围 -->
+<div class="glow-bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+</div>
+
+<div class="container">
+    <!-- 顶部非对称 Bento 设计的 Hero 广告牌模块 -->
+    <section class="hero-bento reveal">
+        <div class="hero-main-box">
+            <span class="hero-tag">// ENGINE & PLATFORM SRE</span>
+            <h1>LONELY <span>HORSE</span></h1>
+            <p>在代码与复杂系统架构的荒原上，独自奔跑。专注于容器化编排、高可用网关设计以及 SRE 稳定性观测平台建设。</p>
         </div>
     </section>
 
-    <!-- 文章卡片列表 -->
-    <div class="container">
-        <div class="post-grid">
-            
-            <!-- 文章 1 -->
-            <article class="post-card reveal">
-                <a href="/article/Alertmanager_Blog" class="card-image">
-                    <img src="https://placehold.co/800x600/111111/FFFFFF?text=Alertmanager+Prometheus" alt="Cover">
+    <!-- 重新调优、错落有致的 Bento Grid 排版 -->
+    <div class="bento-grid">
+        
+        <!-- 卡片 1 (主打卡片 / 宽 / Col-span-2) -->
+        <article class="bento-card col-span-2 reveal">
+            <div class="card-inner">
+                <!-- 彻底舍弃不可靠的在线图片API，采用纯 CSS 优雅渐变，实现现代、无感加载的极致视觉美 -->
+                <a href="/article/Alertmanager_Blog" class="card-image-box solid-gradient g-1">
+                    <span class="image-overlay-text">Alertmanager</span>
                 </a>
-                <div class="card-meta">2026.4.3 · Alertmanager</div>
-                <h2 class="card-title"><a href="/article/Alertmanager_Blog">Alertmanager_Blog</a></h2>
-                <p class="card-excerpt">使用了prometheus来进行抓取数据，用Alertmanager来进行告警处理</p>
-                <a href="/article/Alertmanager_Blog" class="card-btn">阅读全文</a>
-            </article>
+                <div class="card-content">
+                    <div class="card-text-wrapper">
+                        <div class="card-meta">2026.04.03 &middot; OBSERVABILITY</div>
+                        <h2 class="card-title"><a href="/article/Alertmanager_Blog">Alertmanager_Blog</a></h2>
+                        <p class="card-excerpt">探讨如何结合 Prometheus 架构，利用 Alertmanager 实现多通道告警路由机制。</p>
+                    </div>
+                    <a href="/article/Alertmanager_Blog" class="card-btn">READ POST</a>
+                </div>
+            </div>
+        </article>
 
-            <!-- 文章 2 -->
-            <article class="post-card reveal">
-                <a href="/article/FastAPI_Monitor_Blog" class="card-image">
-                    <img src="https://placehold.co/800x600/111111/FFFFFF?text=Fastapi+Monitor" alt="Cover">
+        <!-- 卡片 2 (高卡片 / Col-span-1 & Row-span-2) -->
+        <article class="bento-card col-span-1 row-span-2 reveal">
+            <div class="card-inner vertical">
+                <a href="/article/FastAPI_Monitor_Blog" class="card-image-box tall solid-gradient g-2">
+                    <span class="image-overlay-text">FastAPI Monitor</span>
                 </a>
-                <div class="card-meta">2026.3.28 · Fastapi · prometheus</div>
-                <h2 class="card-title"><a href="/article/FastAPI_Monitor_Blog">FastAPI_Monitor_Blog</a></h2>
-                <p class="card-excerpt">博客的优化后端，以及监测数据重中之重。本文记录了一次完整的重构过程以及总结。</p>
-                <a href="/article/FastAPI_Monitor_Blog" class="card-btn">阅读全文</a>
-            </article>
+                <div class="card-content">
+                    <div class="card-text-wrapper">
+                        <div class="card-meta">2026.03.28 &middot; PERFORMANCE</div>
+                        <h2 class="card-title"><a href="/article/FastAPI_Monitor_Blog">FastAPI_Monitor_Blog</a></h2>
+                        <p class="card-excerpt">博客性能调优与可观测性实战。记录在物理边缘设备上重新打包并精简 FastAPI 镜像的完整步骤。</p>
+                    </div>
+                    <a href="/article/FastAPI_Monitor_Blog" class="card-btn">READ POST</a>
+                </div>
+            </div>
+        </article>
 
-            <!-- 文章 3 -->
-            <article class="post-card reveal">
-                <a href="/article/confession" class="card-image">
-                    <img src="https://placehold.co/800x600/111111/FFFFFF?text=Confession" alt="Cover">
-                </a>
-                <div class="card-meta">2025.12.30 · Life</div>
-                <h2 class="card-title"><a href="/article/confession">班马菜根的自白</a></h2>
-                <p class="card-excerpt">我的名字是班马菜根/lonelyhorse。关于我的一些介绍，以及建立这个博客的初衷。</p>
-                <a href="/article/confession" class="card-btn">阅读全文</a>
-            </article>
+        <!-- 卡片 3 (纯文字精致小卡片 / Col-span-1) -->
+        <article class="bento-card col-span-1 reveal">
+            <div class="card-inner">
+                <div class="card-content no-img">
+                    <div class="card-text-wrapper">
+                        <div class="card-meta">2025.12.30 &middot; CONFESSION</div>
+                        <h2 class="card-title"><a href="/article/confession">班马菜根的自白</a></h2>
+                        <p class="card-excerpt">关于代码与荒野，关于 lonelyhorse 的起源，以及写下这些技术博客的初衷与愿景。</p>
+                    </div>
+                    <a href="/article/confession" class="card-btn">READ POST</a>
+                </div>
+            </div>
+        </article>
 
-            <!-- 文章 5 -->
-            <article class="post-card reveal">
-                <a href="/article/Server_To_Edge" class="card-image">
-                    <img src="https://placehold.co/800x600/111111/FFFFFF?text=Server_To_Edge" alt="Cover">
+        <!-- 卡片 4 (小卡片 / Col-span-1 - 💥 核心改变：重构为 vertical 垂直布局，给长英文名留出足够宽度，彻底防止挤压) -->
+        <article class="bento-card col-span-1 reveal">
+            <div class="card-inner vertical">
+                <a href="/article/Server_To_Edge" class="card-image-box solid-gradient g-3">
+                    <span class="image-overlay-text">Server to Edge</span>
                 </a>
-                <div class="card-meta">2026.4.8 · Edge and Server</div>
-                <h2 class="card-title"><a href="/article/Server_To_Edge">Server_To_Edge</a></h2>
-                <p class="card-excerpt">将项目从云服务器转移到边缘设备中，实现项目的同时挂载和可持续运行</p>
-                <a href="/article/Server_To_Edge" class="card-btn">阅读全文</a>
-            </article>
-            <!-- 文章 6 -->
-            <article class="post-card reveal">
-                <a href="/article/ser7_to_t630" class="card-image">
-                    <img src="https://placehold.co/800x600/111111/FFFFFF?text=Ser7_To_T630" alt="Cover">
-                </a>
-                <div class="card-meta">2026.5。16 · Ser7 and T630</div>
-                <h2 class="card-title"><a href="/article/ser7_to_t630">ser7_to_t630</a></h2>
-                <p class="card-excerpt">将网关和博客项目从ser7转移到边缘t630设备中，实现项目的同时挂载和可持续运行</p>
-                <a href="/article/ser7_to_t630" class="card-btn">阅读全文</a>
-            </article>
+                <div class="card-content">
+                    <div class="card-text-wrapper">
+                        <div class="card-meta">2026.04.08 &middot; INFRASTRUCTURE</div>
+                        <h2 class="card-title"><a href="/article/Server_To_Edge">Server_To_Edge</a></h2>
+                        <p class="card-excerpt">将核心服务及业务线从云端向边缘侧迁移，减少公网带宽依赖与云端费率压力。</p>
+                    </div>
+                    <a href="/article/Server_To_Edge" class="card-btn">READ POST</a>
+                </div>
+            </div>
+        </article>
 
-            <!-- 文章 7 -->
-            <article class="post-card reveal">
-                <a href="/article/FastAPI_metrics" class="card-image">
-                    <img src="https://placehold.co/800x600/111111/FFFFFF?text=FastAPI_metrics" alt="Cover">
+        <!-- 卡片 5 (主打卡片 / 宽 / Col-span-2) -->
+        <article class="bento-card col-span-2 reveal">
+            <div class="card-inner">
+                <a href="/article/ser7_to_t630" class="card-image-box solid-gradient g-4">
+                    <span class="image-overlay-text">SER7 to T630</span>
                 </a>
-                <div class="card-meta">2026.5.20 · Prometheus and Metrics</div>
-                <h2 class="card-title"><a href="/article/FastAPI_metrics">FastAPI_metrics</a></h2>
-                <p class="card-excerpt">Prometheus的/metrics指标数据存在对外暴露问题，故我在解决后，写下了这篇博客记录此事</p>
-                <a href="/article/FastAPI_metrics" class="card-btn">阅读全文</a>
-            </article>
-        </div>
+                <div class="card-content">
+                    <div class="card-text-wrapper">
+                        <div class="card-meta">2026.05.16 &middot; DEPLOYMENT</div>
+                        <h2 class="card-title"><a href="/article/ser7_to_t630">ser7_to_t630</a></h2>
+                        <p class="card-excerpt">从高性能的 SER7 小主机向超低功耗 of 瘦客户机 T630 迁移，并优化网关容器化部署。</p>
+                    </div>
+                    <a href="/article/ser7_to_t630" class="card-btn">READ POST</a>
+                </div>
+            </div>
+        </article>
+
+        <!-- 卡片 6 (小卡片 / Col-span-1 - 💥 核心改变：重构为 vertical 垂直布局，杜绝任何字宽溢出) -->
+        <article class="bento-card col-span-1 reveal">
+            <div class="card-inner vertical">
+                <a href="/article/FastAPI_metrics" class="card-image-box solid-gradient g-5">
+                    <span class="image-overlay-text">FastAPI Metrics</span>
+                </a>
+                <div class="card-content">
+                    <div class="card-text-wrapper">
+                        <div class="card-meta">2026.05.20 &middot; SECURITY</div>
+                        <h2 class="card-title"><a href="/article/FastAPI_metrics">FastAPI_metrics</a></h2>
+                        <p class="card-excerpt">防范指标暴露导致的侧信道泄密风险，对 Prometheus metrics 加载拦截层防御策略。</p>
+                    </div>
+                    <a href="/article/FastAPI_metrics" class="card-btn">READ POST</a>
+                </div>
+            </div>
+        </article>
+
     </div>
+</div>
 {% endblock %}

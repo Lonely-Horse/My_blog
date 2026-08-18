@@ -40,7 +40,7 @@ def index(request:Request):
     index_view_counter.inc()
     return templates.TemplateResponse(request=request, name="index.html")
 
-# 2. 通用文章页 (读取本地 TXT)
+# 2. 通用文章页 (支持读取本地 TXT 或 MD 格式)
 @app.get('/article/{filename}',response_class=HTMLResponse,include_in_schema=False)
 def article(request: Request, filename: str):
 
@@ -48,21 +48,34 @@ def article(request: Request, filename: str):
         not_found_counter.labels(type="article").inc()
         raise HTTPException(status_code=404,detail = "Not Found")
         
-    filepath = POSTS_DIR / f'{filename}.txt'
+    # 优先检测本地是否存在标准的 .md 文件，如果不存在则回退检测旧的 .txt 文件
+    filepath_md = POSTS_DIR / f'{filename}.md'
+    filepath_txt = POSTS_DIR / f'{filename}.txt'
     
-    if not os.path.exists(filepath):
+    is_md = False
+    if os.path.exists(filepath_md):
+        filepath = filepath_md
+        is_md = True
+    elif os.path.exists(filepath_txt):
+        filepath = filepath_txt
+    else:
         not_found_counter.labels(type="article").inc()
         raise HTTPException(status_code=404,detail = "Not Found")
         
     content_lines = []
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-
             content_lines = [line.strip() for line in f.readlines() if line.strip()]
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error reading file")
     article_view_counter.labels(article=filename).inc()
-    return templates.TemplateResponse(name='post.html', request=request,context={"title": filename.upper(), "lines": content_lines})
+    
+    # 将是否是 MD 的标记传递给 Jinja 模板，方便进行精准过滤与编译
+    return templates.TemplateResponse(
+        request=request, 
+        name="post.html", 
+        context={"lines": content_lines, "title": filename, "is_md": is_md}
+    )
 
 # 3. 项目库页面
 @app.get('/projects',include_in_schema=False)

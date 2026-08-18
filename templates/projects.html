@@ -5,8 +5,8 @@
 {% block content %}
 <div class="container">
     <div class="page-header reveal">
-        <h1>PROJECT LIBRARY</h1>
-        <p>Code / Tools / Experiments</p>
+        <h1>PROJECTS</h1>
+        <p>// Code / Tools / Infrastructure experiments</p>
     </div>
 
     <div class="projects-list" style="margin-bottom: 100px;">
@@ -24,7 +24,7 @@
             
             <div class="project-actions">
                 <a href="{{ project.source_link or project.sourse_link or '#' }}" target="_blank" class="btn-outline">
-                    VIEW SOURCE ↗
+                    SOURCE ↗
                 </a>
                 
                 <a href="{{ url_for('download_file', filename=project.file_name) }}" class="btn-solid">

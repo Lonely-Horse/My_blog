@@ -1,37 +1,63 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <script>document.documentElement.classList.add('js-enabled');</script>
+    <script>
+        // 💥 防止闪屏：在 DOM 渲染前立即根据 localStorage/系统偏好应用主题属性
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+        document.documentElement.classList.add('js-enabled');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}lonelyhorse{% endblock %}</title>
+    <!-- 💥 引入 Marked.js（Markdown 解析）与 Highlight.js（代码块语法高亮，引入精美暗色对比风格 Github Dark） -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
 </head>
 <body>
 
-    <!-- 导航栏 -->
-    <header>
-        <div class="container nav-flex">
-            <a href="/" class="logo">lonelyhorse.</a>
+    <!-- 顶层精致的悬浮胶囊导航栏结构 -->
+    <div class="nav-container">
+        <header class="floating-header">
+            <a href="/" class="logo">lonelyhorse</a>
             <div class="menu-toggle">☰</div>
             <nav class="nav-links">
                 <a href="/">首页</a>
                 <a href="/projects">项目库</a>
                 <a href="/article/confession">自白</a>
                 <a href="/notes">随笔</a>
+                <!-- 💥 主题切换按钮：极简双色无框设计 -->
+                <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">
+                    <span class="theme-icon sun-icon">☀️</span>
+                    <span class="theme-icon moon-icon">🌙</span>
+                </button>
             </nav>
-        </div>
-    </header>
+        </header>
+    </div>
 
     <!-- 内容区域 -->
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <!-- 底部 -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 lonelyhorse. Code and Solitude.</p>
+    <!-- 底部区域 (精致极简) -->
+    <footer class="modern-footer">
+        <div class="container footer-content">
+            <div class="footer-left">
+                <span class="footer-logo">lonelyhorse</span>
+                <span class="footer-desc">DevOps, SRE & Web Architecture.</span>
+            </div>
+            <div class="footer-right">
+                <p>&copy; 2026 lonelyhorse. Designed for elegance.</p>
+            </div>
         </div>
     </footer>
 

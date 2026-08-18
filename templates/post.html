@@ -5,26 +5,66 @@
 {% block content %}
     <article class="article-container reveal">
         <header class="article-header">
-            <!-- 自动过滤掉 txt 中第一行自带的《标题》，直接用页面本身渲染的标题 -->
-            {% set raw_heading = lines[0] if lines else title %}
-            {% set display_title = raw_heading[1:-1] if raw_heading.startswith('《') and raw_heading.endswith('》') else raw_heading %}
-            
-            <h1 class="article-title">{{ display_title }}</h1>
-            <div class="article-meta">Words and Reflections &middot; LONELY HORSE</div>
+            <!-- 💥 移除原先写死的 h1 标签，改为只显示精致的元数据标识，标题完全由 Markdown 内容自身来渲染 -->
+            <div class="article-meta" style="margin-top: 0; padding-bottom: 0;">
+                <span>// ARCHIVE</span> Words and Reflections &middot; LONELY HORSE
+            </div>
         </header>
 
-        <div class="article-body">
-            <!-- 插入不可见的空段落，用来消耗掉全局 CSS 中的 p:first-of-type 首字母大写样式 -->
-            <p style="display: none;"></p>
-            
-            <!-- 遍历 TXT 的每一行，跳过空行与第一行的原标题 -->
-            {% set article_lines = lines[1:] if lines and raw_heading == lines[0] else lines %}
-            {% for line in article_lines %}
-                {% if line.strip() %}
-                    <p class="reveal">{{ line }}</p>
-                {% endif %}
-            {% endfor %}
+        <!-- 💥 Markdown 渲染的骨架容器：我们将使用具有设计感的 .markdown-body 进行控制 -->
+        <div class="article-body markdown-body" id="markdown-content">
+            <!-- 预留降级块：在 JS 加载前显示原始的文本，防止无内容白屏 -->
+            {% if is_md %}
+                <!-- 如果是 MD 文件，在 JS 加载前先显示前几行摘要 -->
+                <p class="reveal">{{ lines[1] if lines|length > 1 else '' }}</p>
+                <p class="reveal">{{ lines[2] if lines|length > 2 else '' }}</p>
+            {% else %}
+                {% set article_lines = lines[1:] if lines and raw_heading == lines[0] else lines %}
+                {% for line in article_lines %}
+                    {% if line.strip() %}
+                        <p class="reveal">{{ line }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
         </div>
+
+        <!-- 💥 隐藏的原始文本块：用于供给 JS 提取并无损解析 Markdown 语法 -->
+        <script type="text/plain" id="raw-markdown-source">{% if is_md %}{{ "\n".join(lines) }}{% elif lines and raw_heading == lines[0] %}{{ "\n".join(lines[1:]) }}{% else %}{{ "\n".join(lines) }}{% endif %}</script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const rawSourceEl = document.getElementById('raw-markdown-source');
+                const targetContentEl = document.getElementById('markdown-content');
+                
+                if (rawSourceEl && targetContentEl && typeof marked !== 'undefined') {
+                    // 获取模板传递的无损原始纯文本（兼容 TXT 与 MD）
+                    const rawText = rawSourceEl.textContent;
+                    
+                    // 配置 marked.js 的解析规则
+                    marked.setOptions({
+                        gfm: true,          // 启用 Github 风格 Markdown
+                        breaks: true,       // 允许硬换行
+                        highlight: function(code, lang) {
+                            if (typeof hljs !== 'undefined') {
+                                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                                return hljs.highlight(code, { language }).value;
+                            }
+                            return code;
+                        }
+                    });
+
+                    // 编译 Markdown 替换降级块
+                    targetContentEl.innerHTML = marked.parse(rawText);
+
+                    // 触发 Highlight.js 渲染页面中的所有代码块
+                    if (typeof hljs !== 'undefined') {
+                        targetContentEl.querySelectorAll('pre code').forEach((block) => {
+                            hljs.highlightElement(block);
+                        });
+                    }
+                }
+            });
+        </script>
         
         <div class="reveal" style="margin-top: 80px; text-align: center; margin-bottom: 40px;">
             <a href="/" class="btn-outline">← RETURN HOME</a>
