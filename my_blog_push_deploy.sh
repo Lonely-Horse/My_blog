@@ -19,10 +19,10 @@ Image_address="100.87.250.21:5000"
 Image_name="blog_local"
 Image_latest="${Image_address}/${Image_name}:latest"
 Image_version="${Image_address}/${Image_name}:${version}"
-T630_HOST="lonelyhorse@100.87.126.53"
-T630_DEPLOY_SCRIPT="${HOME}/My_blog/pull_deploy.sh"
-t630_blog_address="${HOME}/My_blog"
-ssh_key="${HOME}/.ssh/ser7_to_t630_deploy"
+MP9_HOST="lonelyhorse@100.94.116.106"
+MP9_DEPLOY_SCRIPT="${HOME}/server/My_blog/pull_deploy.sh"
+mp9_blog_address="${HOME}/server/My_blog"
+ssh_key="${HOME}/.ssh/ser7_to_mp9"
 ssh_opts="-i ${ssh_key} -o BatchMode=yes"
 
 fetch_tag() {
@@ -78,10 +78,10 @@ docker push ${Image_version}
 echo "镜像推送完毕"
 
 echo "开始rsync同步文件"
-rsync -av -e "ssh ${ssh_opts}" ./posts/ "${T630_HOST}:${t630_blog_address}/posts/"
-rsync -av -e "ssh ${ssh_opts}" ./notes/ "${T630_HOST}:${t630_blog_address}/notes/"
+rsync -av -e "ssh ${ssh_opts}" ./posts/ "${T630_HOST}:${mp9_blog_address}/posts/"
+rsync -av -e "ssh ${ssh_opts}" ./notes/ "${T630_HOST}:${mp9_blog_address}/notes/"
 
 echo "静态文件完成同步"
 
 echo "触发 T630 部署..."
-ssh ${ssh_opts} "$T630_HOST" "bash ${T630_DEPLOY_SCRIPT} '${version}'"
+ssh ${ssh_opts} "$MP9_HOST" "bash ${MP9_DEPLOY_SCRIPT} '${version}'"
