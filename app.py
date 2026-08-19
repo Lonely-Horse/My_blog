@@ -10,7 +10,15 @@ from prometheus_client import Counter
 from pathlib import Path
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+# 💥 引入中间件以自动提取 Nginx 转发过来的 X-Forwarded-Proto 头，强制将 url_for 渲染为正确的 https 协议
+from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.cors import CORSMiddleware
+
 app = FastAPI()
+
+# 允许接收 X-Forwarded-* 标头修正协议（当处于 https 反向代理后方时）
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 templates=Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")

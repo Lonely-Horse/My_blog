@@ -16,10 +16,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}lonelyhorse{% endblock %}</title>
-    <!-- 💥 引入 Marked.js（Markdown 解析）与 Highlight.js（代码块语法高亮，引入精美暗色对比风格 Github Dark） -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+    <!-- 💥 彻底消除外部 CDN 依赖，改用本地只读静态文件托管以防御 Mixed Content 混合协议拦截及 CDN 白屏风险 -->
+    <script src="{{ url_for('static', path='js/marked.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/github-dark.min.css') }}">
+    <script src="{{ url_for('static', path='js/highlight.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
 </head>
 <body>
