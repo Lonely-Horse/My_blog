@@ -78,8 +78,8 @@ docker push ${Image_version}
 echo "镜像推送完毕"
 
 echo "开始rsync同步文件"
-rsync -av -e "ssh ${ssh_opts}" ./posts/ "${T630_HOST}:${mp9_blog_address}/posts/"
-rsync -av -e "ssh ${ssh_opts}" ./notes/ "${T630_HOST}:${mp9_blog_address}/notes/"
+rsync -av -e "ssh ${ssh_opts}" ./posts/ "${MP9_HOST}:${mp9_blog_address}/posts/"
+rsync -av -e "ssh ${ssh_opts}" ./notes/ "${MP9_HOST}:${mp9_blog_address}/notes/"
 
 echo "静态文件完成同步"
 

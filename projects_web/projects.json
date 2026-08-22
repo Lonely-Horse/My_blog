@@ -55,6 +55,38 @@
 		"file_name":"ansible.zip",
 		"tags":["Ansible","Lac","init"],
 		"source_link":"https://github.com/Lonely-Horse/lac_ansible"
+	},
+	{
+		"id":8,
+		"name":"homelab-telemetry",
+		"desc":"一个中转反代项目，并实现了自制prometheus标准数据采集",
+		"file_name":"homelab-telemetry.zip",
+		"tags":["telemetry","metrics","中转反代"],
+		"source_link":"https://github.com/Lonely-Horse/homelab-telemetry"
+	},
+	{
+		"id":9,
+		"name":"study-traker",
+		"desc":"一个OpenAPI标准协议的skill，用于记录学习的时间和内容，并写有dashboard",
+		"file_name":"Study_Traker.zip",
+		"tags":["Skill","Openapi","记录"],
+		"source_link":"https://github.com/Lonely-Horse/Study_Traker"
+	},
+	{
+		"id":10,
+		"name":"socratic-tutor-harness",
+		"desc":"本身作为一个cli界面的harness，但是最新版包裹了一层OpenAPI协议的skill层次",
+		"file_name":"socratic-tutor-harness.zip",
+		"tags":["harness","socratic","cli","skill"],
+		"source_link":"https://github.com/Lonely-Horse/socratic-tutor-harness"
+	},
+	{
+		"id":11,
+		"name":"homelab-agent-exec",
+		"desc":"该项目作为agent安全可操控的命令执行skill，防止agent发病乱写命令",
+		"file_name":"homelab-agent-exec.zip",
+		"tags":["skill","exec"],
+		"source_link":"https://github.com/Lonely-Horse/homelab-agent-exec"
 	}
 ]
 
