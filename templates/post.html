@@ -28,8 +28,8 @@
             {% endif %}
         </div>
 
-        <!-- 💥 隐藏的原始文本块：用于供给 JS 提取并无损解析 Markdown 语法 -->
-        <script type="text/plain" id="raw-markdown-source">{% if is_md %}{{ "\n".join(lines) }}{% elif lines and raw_heading == lines[0] %}{{ "\n".join(lines[1:]) }}{% else %}{{ "\n".join(lines) }}{% endif %}</script>
+        <!-- 💥 隐藏的原始文本块：使用 textarea 来无损保留原始换行、空格以及特殊符号（如 < 和 >），防止 Jinja 模板渲染时将其强行转义 -->
+        <textarea id="raw-markdown-source" style="display: none;">{% if is_md %}{{ "\n".join(lines) }}{% elif lines and raw_heading == lines[0] %}{{ "\n".join(lines[1:]) }}{% else %}{{ "\n".join(lines) }}{% endif %}</textarea>
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
@@ -37,8 +37,8 @@
                 const targetContentEl = document.getElementById('markdown-content');
                 
                 if (rawSourceEl && targetContentEl && typeof marked !== 'undefined') {
-                    // 获取模板传递的无损原始纯文本（兼容 TXT 与 MD）
-                    const rawText = rawSourceEl.textContent;
+                    // 获取 textarea 中的无损原始纯文本（保留原始换行与特殊实体）
+                    const rawText = rawSourceEl.value;
                     
                     // 配置 marked.js 的解析规则
                     marked.setOptions({

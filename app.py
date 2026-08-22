@@ -73,7 +73,11 @@ def article(request: Request, filename: str):
     content_lines = []
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            content_lines = [line.strip() for line in f.readlines() if line.strip()]
+            # 💥 核心修复：绝对不能使用 line.strip() 过滤掉前后的空格！
+            # 因为 Markdown 的列表、缩进代码块以及 ASCII 流程图极其依赖每一行最前方的“空格占位”。
+            # strip() 会直接把流程图前的空格剥离干净，导致渲染对齐完全损坏！
+            # 我们只去除行尾部的换行符 \n，100% 保留每一行最前面的前导空格。
+            content_lines = [line.rstrip('\r\n') for line in f.readlines()]
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error reading file")
     article_view_counter.labels(article=filename).inc()

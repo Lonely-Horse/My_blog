@@ -27,7 +27,8 @@
     
     --font-heading: 'Plus Jakarta Sans', -apple-system, sans-serif;
     --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    /* 💥 核心修改：在 monospace 之前补充指定 Fira Code, Consolas 和英文字体，并在最前方定义等宽映射 */
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', 'Courier', monospace;
     
     --container-width: 1160px;
     --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1186,12 +1187,16 @@ main {
 
 .markdown-body pre code {
     font-family: var(--font-mono);
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-size: 0.85rem;                  /* 略微调小字体大小以容纳超宽流程图 */
+    line-height: 1.45;                   /* 紧凑行距以防纵向错位 */
     background: none !important;
     padding: 0;
     border: none;
     color: #e2e8f0;
+    white-space: pre !important;         /* 强制保留所有连续空格与换行，不折叠 */
+    word-spacing: normal !important;      /* 维持标准单词间距 */
+    word-break: normal !important;        /* 禁用自动断行 */
+    word-wrap: normal !important;         /* 禁用强制折行 */
 }
 
 .markdown-body strong {
