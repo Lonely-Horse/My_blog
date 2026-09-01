@@ -34,13 +34,13 @@
 
 ### 1.cli版本
 1.1 源代码位置
-    可见[`socratic-tutor-hrness-mvp1`](https://github.com/Lonely-Horse/socratic-tutor-harness/tree/mvp1)
+    可见[`socratic-tutor-harness-mvp1`](https://github.com/Lonely-Horse/socratic-tutor-harness/tree/mvp1)
 1.2 食用方法
     直接使用`go build -o socratic-tutor-harness ./cmd/tutor/main.go`命令可以直接完成可执行文件的编译，当然前提是你的设备具有go的编译环境
 
 ### 2.skill版本
 1.1 源代码位置
-    可直接在我的博客中的项目库中找到，也可以在[`socratic-tutor-hrness`](https://github.com/Lonely-Horse/socratic-tutor-harness)找到
+    可直接在我的博客中的项目库中找到，也可以在[`socratic-tutor-harness`](https://github.com/Lonely-Horse/socratic-tutor-harness)找到
 1.2 食用方法
     直接使用`go build -o socratic-tutor-harness ./cmd/tutor/main.go`命令可以直接完成可执行文件的编译，当然前提是你的设备具有go的编译环境，你也可以直接根据我的docker配置，使用`Docker`来运行服务，但是我的docker配置默认使用的是`dify`的网络，所以你需要根据实际情况进行微调，详情可见我的github仓库，详细查看配置方法
 
